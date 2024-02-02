@@ -31,6 +31,9 @@ jobs:
           git add dist/* -f
           git commit -m "Add compiled files"
 
+      - name: Fetch tags
+        run: git fetch --tags
+
       - name: Create Tag
         id: create_tag
         run: |
