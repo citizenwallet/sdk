@@ -40,6 +40,10 @@ jobs:
           MINOR=${VERSION_PARTS[1]}
           PATCH=${VERSION_PARTS[2]}
           NEW_TAG="$MAJOR.$MINOR.$((PATCH + 1))"
+          while git rev-parse "$NEW_TAG" >/dev/null 2>&1; do
+            PATCH=$((PATCH + 1))
+            NEW_TAG="$MAJOR.$MINOR.$PATCH"
+          done
           git tag $NEW_TAG
           echo ::set-output name=tag::${NEW_TAG}
 
