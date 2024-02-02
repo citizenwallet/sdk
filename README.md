@@ -1,6 +1,6 @@
 <div align="center">
     <img src="https://raw.githubusercontent.com/citizenwallet/sdk/main/assets/logo.png" alt="Citizen Wallet Logo" width="200">
-    <h1>Your SDK Name</h1>
+    <h1>Citizen Wallet SDK</h1>
 </div>
 
 An easy-to-use SDK for building frontend interfaces that interact with our backend. This SDK is frontend framework agnostic and includes types, API calls, and state management.
