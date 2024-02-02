@@ -9,9 +9,22 @@
     "watch": "tsc-watch --onSuccess \"npm run build\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "web3",
+    "sdk",
+    "4337",
+    "erc4337",
+    "account abstraction",
+    "wallet",
+    "tokens",
+    "erc20",
+    "userop"
+  ],
+  "author": "Kevin Sundar Raj",
   "license": "MIT",
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "tsc-watch": "^6.0.4",
     "typescript": "^5.3.3"
