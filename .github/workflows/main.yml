@@ -28,7 +28,7 @@ jobs:
         run: |
           git config --local user.email "bot@citizenwallet.xyz"
           git config --local user.name "CW Bot"
-          git add dist/*
+          git add dist/* -f
           git commit -m "Add compiled files"
 
       - name: Create Tag
