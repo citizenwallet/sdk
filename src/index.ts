@@ -1,1 +1,1 @@
-export const helloWorld = () => "Hello World!";
+export { ERC20IOU, useERC20IOU } from "./erc20IOU";
