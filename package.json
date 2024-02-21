@@ -1,6 +1,6 @@
 {
   "name": "sdk",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "An easy sdk to easily work with your community server.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
