@@ -1,7 +1,7 @@
 {
-  "name": "sdk",
+  "name": "@citizenwallet/sdk",
   "version": "0.0.1",
-  "description": "An easy sdk to easily work with your community server.",
+  "description": "An sdk to easily work with your community server.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -19,7 +19,8 @@
     "wallet",
     "tokens",
     "erc20",
-    "userop"
+    "userop",
+    "iou"
   ],
   "author": "Kevin Sundar Raj",
   "license": "MIT",
