@@ -25,18 +25,91 @@ To install the SDK, run the following command in your terminal:
 npm install --save @citizenwallet/sdk
 ```
 
-## Usage
+## Usage (React with hooks)
 
 Import the SDK into your project:
 
 ```
-import { useTransactions } from '@citizenwallet/sdk';
+import { useERC20IOU } from '@citizenwallet/sdk';
 ```
 
 Then, you can use the SDK's functions to interact with the backend. For example:
 
 ```
-const transactions = useTransactions(address);
+const [store, actions] = useERC20IOU(signer, address);
+```
+
+Trigger actions.
+
+```
+actions.getHash(...);
+
+actions.redeem(...);
+```
+
+Listen to updates from the store.
+
+```
+const loading = store(state => state.loading);
+const hash = store(state => state.hash);
+```
+
+```
+function Component() {
+    const [store, actions] = useERC20IOU(signer, address);
+
+    useEffect(() => {
+        actions.getHash(...);
+    }, [actions]);
+
+    const loading = store(state => state.loading);
+    const hash = store(state => state.hash);
+
+    return (
+        <div>{loading ? 'loading...' : hash}</div>
+    )
+}
+```
+
+## Usage (vanilla)
+
+If you are not using React, you can simply instantiate and call functions directly.
+
+Import the SDK into your project:
+
+```
+import { ERC20IOU } from '@citizenwallet/sdk';
+```
+
+Then, you can use the SDK's functions to interact with the backend. For example:
+
+```
+const erc20IOU = ERC20IOU(signer, address);
+```
+
+Trigger calls.
+
+```
+erc20IOU.getHash(...);
+
+erc20IOU.redeem(...);
+```
+
+Get data from calls.
+
+```
+const state = erc20IOU.store.getState();
+
+console.log('loading', state.loading);
+console.log('hash', state.hash);
+```
+
+Subscribe to changes.
+
+```
+erc20IOU.store.subscribe((state) => {
+      // do something here;
+});
 ```
 
 ## Building
