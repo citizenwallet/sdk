@@ -54,6 +54,7 @@ jobs:
           git add dist/* -f
           git add package.json
           git commit -m "Add compiled files & tag"
+          git push origin main
 
       - name: Create tag
         run: git tag ${{ steps.parse_tag.outputs.tag }}
