@@ -24,18 +24,11 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Commit changes
-        run: |
-          git config --local user.email "bot@citizenwallet.xyz"
-          git config --local user.name "CW Bot"
-          git add dist/* -f
-          git commit -m "Add compiled files"
-
       - name: Fetch tags
         run: git fetch --tags
 
-      - name: Create Tag
-        id: create_tag
+      - name: Parse Tag
+        id: parse_tag
         run: |
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo '1.0.0')
           IFS='.' read -ra VERSION_PARTS <<< "$LAST_TAG"
@@ -47,8 +40,27 @@ jobs:
             PATCH=$((PATCH + 1))
             NEW_TAG="$MAJOR.$MINOR.$PATCH"
           done
-          git tag $NEW_TAG
           echo ::set-output name=tag::${NEW_TAG}
 
+      - name: Update package.json version
+        run: |
+          npm version --no-git-tag-version $(echo ${{ steps.parse_tag.outputs.tag }})
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "bot@citizenwallet.xyz"
+          git config --local user.name "CW Bot"
+          git add dist/* -f
+          git add package.json
+          git commit -m "Add compiled files & tag"
+
+      - name: Create tag
+        run: git tag ${{ steps.parse_tag.outputs.tag }}
+
       - name: Push Tag
-        run: git push origin ${{ steps.create_tag.outputs.tag }}
+        run: git push origin ${{ steps.parse_tag.outputs.tag }}
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
