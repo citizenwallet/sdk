@@ -79,5 +79,5 @@ jobs:
           curl --location '${{ secrets.DISCORD_WEBHOOK_URL }}' \
           --header 'Content-Type: application/json' \
           --data '{
-              "content": "new sdk update available: `npm i @citizenwallet/sdk@'${{ steps.parse_tag.outputs.tag }}'`\n or \n `npm i @citizenwallet/sdk@latest` \n\n https://www.npmjs.com/package/@citizenwallet/sdk?activeTab=readme"
+              "content": "new sdk update available:\n `npm i @citizenwallet/sdk@'${{ steps.parse_tag.outputs.tag }}'`\n or \n `npm i @citizenwallet/sdk@latest` \n\n https://www.npmjs.com/package/@citizenwallet/sdk?activeTab=readme"
           }'
