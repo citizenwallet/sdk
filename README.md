@@ -30,13 +30,13 @@ npm install --save @citizenwallet/sdk
 Import the SDK into your project:
 
 ```
-import { useERC20IOU } from '@citizenwallet/sdk';
+import { useERC20IOUStore } from '@citizenwallet/sdk';
 ```
 
 Then, you can use the SDK's functions to interact with the backend. For example:
 
 ```
-const [storeListener, actions] = useERC20IOU(address, signer);
+const [listener, actions] = useERC20IOUStore(address, signer);
 ```
 
 ### Trigger actions.
@@ -50,8 +50,8 @@ actions.redeem(...);
 ### Listen to updates from the store.
 
 ```
-const loading = storeListener(state => state.loading);
-const hash = storeListener(state => state.hash);
+const loading = listener(state => state.loading);
+const hash = listener(state => state.hash);
 ```
 
 ### Access data directly
@@ -64,14 +64,14 @@ const hash = actions.store.getState().hash;
 
 ```
 function Component() {
-    const [storeListener, actions] = useERC20IOU(address, signer);
+    const [listener, actions] = useERC20IOUStore(address, signer);
 
     useEffect(() => {
         actions.getHash(...);
     }, [actions]);
 
-    const loading = storeListener(state => state.loading);
-    const hash = storeListener(state => state.hash);
+    const loading = listener(state => state.loading);
+    const hash = listener(state => state.hash);
 
     return (
         <div>{loading ? 'loading...' : hash}</div>
@@ -86,27 +86,27 @@ If you are not using React, you can simply instantiate and call functions direct
 Import the SDK into your project:
 
 ```
-import { ERC20IOU } from '@citizenwallet/sdk';
+import { ERC20IOUActions } from '@citizenwallet/sdk';
 ```
 
 Then, you can use the SDK's functions to interact with the backend. For example:
 
 ```
-const erc20IOU = ERC20IOU(address, signer);
+const actions = ERC20IOUActions(address, signer);
 ```
 
 ### Trigger calls.
 
 ```
-erc20IOU.getHash(...);
+actions.getHash(...);
 
-erc20IOU.redeem(...);
+actions.redeem(...);
 ```
 
 ### Get data from calls.
 
 ```
-const state = erc20IOU.store.getState();
+const state = actions.store.getState();
 
 console.log('loading', state.loading);
 console.log('hash', state.hash);
@@ -115,7 +115,7 @@ console.log('hash', state.hash);
 ### Subscribe to changes.
 
 ```
-erc20IOU.store.subscribe((state) => {
+actions.store.subscribe((state) => {
       // do something here;
 });
 ```
