@@ -2,7 +2,7 @@ import { JsonRpcProvider, ethers } from "ethers";
 import tokenEntryPointContractAbi from "smartcontracts/build/contracts/tokenEntryPoint/TokenEntryPoint.abi.json";
 import accountFactoryContractAbi from "smartcontracts/build/contracts/accfactory/AccountFactory.abi.json";
 import accountContractAbi from "smartcontracts/build/contracts/account/Account.abi.json";
-import tokenContractAbi from "smartcontracts/build/contracts/erc20/erc20.abi.json";
+import tokenContractAbi from "smartcontracts/build/contracts/erc20/ERC20.abi.json";
 import { Config } from "../api/config";
 
 const accountFactoryInterface = new ethers.Interface(accountFactoryContractAbi);
