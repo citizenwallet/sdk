@@ -3,11 +3,11 @@
     <h1>Citizen Wallet SDK</h1>
 </div>
 
-An easy-to-use SDK for building frontend interfaces that interact with our backend. This SDK is frontend framework agnostic and includes types, API calls, and state management.
+An easy-to-use SDK for building frontend interfaces that interact with a community server and any related smart contracts that we use. This SDK is frontend framework agnostic and includes types, API calls, and state management.
 
 ## Introduction
 
-Welcome to the official SDK for our platform. This SDK provides a simple and efficient way to integrate your frontend application with our backend services. It's designed to be easy to use, while providing a comprehensive set of features to help you build powerful applications.
+Welcome to the official SDK for our platform. This SDK provides a simple and efficient way to integrate your frontend application with our backend services. It's designed for speeding up development of client applications by providing state management out of the box. You can simply make requests and have your UI listen for and display the data.
 
 Whether you're building a small side project or a large-scale commercial application, this SDK has everything you need to get started. It includes:
 
@@ -36,10 +36,10 @@ import { useERC20IOU } from '@citizenwallet/sdk';
 Then, you can use the SDK's functions to interact with the backend. For example:
 
 ```
-const [store, actions] = useERC20IOU(signer, address);
+const [storeListener, actions] = useERC20IOU(address, signer);
 ```
 
-Trigger actions.
+### Trigger actions.
 
 ```
 actions.getHash(...);
@@ -47,23 +47,31 @@ actions.getHash(...);
 actions.redeem(...);
 ```
 
-Listen to updates from the store.
+### Listen to updates from the store.
 
 ```
-const loading = store(state => state.loading);
-const hash = store(state => state.hash);
+const loading = storeListener(state => state.loading);
+const hash = storeListener(state => state.hash);
 ```
+
+### Access data directly
+
+```
+const hash = actions.store.getState().hash;
+```
+
+### Example
 
 ```
 function Component() {
-    const [store, actions] = useERC20IOU(signer, address);
+    const [storeListener, actions] = useERC20IOU(address, signer);
 
     useEffect(() => {
         actions.getHash(...);
     }, [actions]);
 
-    const loading = store(state => state.loading);
-    const hash = store(state => state.hash);
+    const loading = storeListener(state => state.loading);
+    const hash = storeListener(state => state.hash);
 
     return (
         <div>{loading ? 'loading...' : hash}</div>
@@ -84,10 +92,10 @@ import { ERC20IOU } from '@citizenwallet/sdk';
 Then, you can use the SDK's functions to interact with the backend. For example:
 
 ```
-const erc20IOU = ERC20IOU(signer, address);
+const erc20IOU = ERC20IOU(address, signer);
 ```
 
-Trigger calls.
+### Trigger calls.
 
 ```
 erc20IOU.getHash(...);
@@ -95,7 +103,7 @@ erc20IOU.getHash(...);
 erc20IOU.redeem(...);
 ```
 
-Get data from calls.
+### Get data from calls.
 
 ```
 const state = erc20IOU.store.getState();
@@ -104,12 +112,36 @@ console.log('loading', state.loading);
 console.log('hash', state.hash);
 ```
 
-Subscribe to changes.
+### Subscribe to changes.
 
 ```
 erc20IOU.store.subscribe((state) => {
       // do something here;
 });
+```
+
+## Usage (contract)
+
+If you want to make direct calls to the contract and handle everything else yourself.
+
+Import the SDK into your project:
+
+```
+import { ERC20IOUContract } from '@citizenwallet/sdk';
+```
+
+Then, you can use the SDK's functions to interact with the backend. For example:
+
+```
+const contract = ERC20IOUContract(address, signer);
+```
+
+### Trigger calls.
+
+```
+const hash = await contract.getHash(...);
+
+await contract.redeem(...);
 ```
 
 ## Building

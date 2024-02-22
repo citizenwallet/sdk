@@ -11,12 +11,13 @@ import { StoreApi, useStore } from "zustand";
 import store, { ERC20IOUStore } from "./state";
 
 import ERC20IOUAbi from "smartcontracts/build/contracts/erc20IOU/ERC20IOU.abi.json";
+import { ERC20IOUContract } from "../../contracts/ERC20IOU";
 
 /**
  * Represents a way to interact with an ERC20IOU contract.
  */
 export class ERC20IOU {
-  contract: Contract;
+  contract: ERC20IOUContract;
   store: StoreApi<ERC20IOUStore>;
 
   /**
@@ -24,9 +25,9 @@ export class ERC20IOU {
    * @param provider - The RPC provider.
    * @param contractAddress - The address of the ERC20IOU contract.
    */
-  constructor(signer: ContractRunner, contractAddress: string) {
+  constructor(contractAddress: string, signer: ContractRunner) {
     // instantiate rpc provider
-    this.contract = new Contract(contractAddress, ERC20IOUAbi, signer);
+    this.contract = new ERC20IOUContract(contractAddress, signer);
 
     this.store = store;
   }
@@ -49,7 +50,7 @@ export class ERC20IOU {
     try {
       this.store.getState().request();
 
-      const hash = await this.contract.getFunction("getHash")(
+      const hash = await this.contract.getHash(
         from,
         amount,
         validUntil,
@@ -83,7 +84,7 @@ export class ERC20IOU {
   ) {
     try {
       this.store.getState().request();
-      await this.contract.getFunction("redeem")(
+      await this.contract.redeem(
         from,
         amount,
         validUntil,
@@ -104,8 +105,8 @@ export class ERC20IOU {
  * @param contractAddress - The address of the ERC20IOU contract.
  * @returns An array containing the useBoundStore function and the ERC20IOU instance.
  */
-export const useERC20IOU = (provider: Provider, contractAddress: string) => {
-  const erc20IOURef = useRef(new ERC20IOU(provider, contractAddress));
+export const useERC20IOU = (contractAddress: string, provider: Provider) => {
+  const erc20IOURef = useRef(new ERC20IOU(contractAddress, provider));
 
   const useBoundStore = (selector: (state: ERC20IOUStore) => unknown) =>
     useStore(erc20IOURef.current.store, selector);
