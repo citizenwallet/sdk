@@ -16,7 +16,7 @@ describe("Config", () => {
   });
 
   it("get a config", async () => {
-    const config = await configService.getByAlias("community1");
+    const config = await configService.getBySlug("community1");
 
     expect(config.community.name).toBe("Community 1");
   });

@@ -2,7 +2,7 @@ import { Contract, ContractRunner } from "ethers";
 
 import ERC20IOUAbi from "smartcontracts/build/contracts/erc20IOU/ERC20IOU.abi.json";
 
-export class ERC20IOUContract {
+export class ERC20IOUContractService {
   /**
    * The contract instance.
    */

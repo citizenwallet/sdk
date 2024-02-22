@@ -1,9 +1,10 @@
-import { BaseApiService } from "../api";
+import { CONFIG_BASE_URL } from "../../config";
+import { ApiService, BaseApiService } from "../api";
 import { BaseConfigApiService, Config } from "../api/config";
 
 export class ConfigService {
-  constructor(api: BaseApiService) {
-    this.api = api.config;
+  constructor(api?: BaseApiService) {
+    this.api = (api ?? new ApiService(CONFIG_BASE_URL)).config;
   }
 
   api: BaseConfigApiService;
@@ -26,10 +27,10 @@ export class ConfigService {
     return this.config!;
   }
 
-  async getByAlias(alias: string): Promise<Config> {
+  async getBySlug(slug: string): Promise<Config> {
     const configs = await this.get();
 
-    const config = configs.find((c) => c.community.alias === alias);
+    const config = configs.find((c) => c.community.alias === slug);
     if (!config) {
       throw new Error("Config not found");
     }
