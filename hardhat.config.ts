@@ -20,12 +20,10 @@ const hhconfig: HardhatUserConfig = {
   networks: {
     ethereum_mainnet: {
       url: process.env.ETHEREUM_MAINNET_RPC_URL,
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY || "0x0"],
       gasPrice: Number(ethers.parseUnits("90", "gwei")), // this is 90 Gwei
     },
     polygon_mainnet: {
       url: process.env.POLYGON_MAINNET_RPC_URL,
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY || "0x0"],
       gasPrice: Number(ethers.parseUnits("450", "gwei")), // this is 150 Gwei
       timeout: 999999,
       throwOnTransactionFailures: true,
@@ -34,7 +32,6 @@ const hhconfig: HardhatUserConfig = {
     },
     polygon_testnet: {
       url: process.env.POLYGON_TESTNET_RPC_URL,
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY || "0x0"],
       gasPrice: Number(ethers.parseUnits("5", "gwei")), // this is 90 Gwei
       timeout: 999999,
       gas: 12400000,
@@ -44,22 +41,18 @@ const hhconfig: HardhatUserConfig = {
     },
     base_mainnet: {
       url: process.env.BASE_MAINNET_RPC_URL,
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY || "0x0"],
       gasPrice: Number(ethers.parseUnits("30", "gwei")), // this is 30 Gwei
     },
     base_testnet: {
       url: process.env.BASE_TESTNET_RPC_URL,
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY || "0x0"],
       gasPrice: Number(ethers.parseUnits("30", "gwei")), // this is 30 Gwei
     },
     celo_mainnet: {
       url: process.env.CELO_MAINNET_RPC_URL,
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY || "0x0"],
       gasPrice: Number(ethers.parseUnits("30", "gwei")), // this is 30 Gwei
     },
     celo_testnet: {
       url: process.env.CELO_TESTNET_RPC_URL,
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY || "0x0"],
       gasPrice: Number(ethers.parseUnits("30", "gwei")), // this is 30 Gwei
     },
   },
