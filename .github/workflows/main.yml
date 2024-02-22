@@ -37,7 +37,10 @@ jobs:
       - name: Parse Tag
         id: parse_tag
         run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo '1.0.0')
+          LAST_TAG=$(git tag | sort -V | tail -n 1)
+          if [ -z "$LAST_TAG" ]; then
+            LAST_TAG='1.0.0'
+          fi
           IFS='.' read -ra VERSION_PARTS <<< "$LAST_TAG"
           MAJOR=${VERSION_PARTS[0]}
           MINOR=${VERSION_PARTS[1]}
