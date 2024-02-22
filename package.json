@@ -1,6 +1,6 @@
 {
   "name": "@citizenwallet/sdk",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "An sdk to easily work with your community server.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
