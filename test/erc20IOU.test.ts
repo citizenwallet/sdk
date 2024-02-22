@@ -6,7 +6,7 @@ import ERC20Artifact from "smartcontracts/artifacts/contracts/tokens/Upgradeable
 import ERC20IOUArtifact from "smartcontracts/artifacts/contracts/apps/ERC20IOU.sol/ERC20IOU.json";
 
 import { ERC20IOU } from "../src/index";
-import { getSignedHash } from "../src/erc20IOU";
+import { getSignedHash } from "../src/state/erc20IOU";
 import { Contract } from "ethers";
 
 describe("ERC20IOU", () => {
@@ -48,7 +48,7 @@ describe("ERC20IOU", () => {
 
     await token.mint(owner.address, 100, "hello");
 
-    const erc20IOU = new ERC20IOU(friend1, await tokeniou.getAddress());
+    const erc20IOU = new ERC20IOU(await tokeniou.getAddress(), friend1);
 
     return {
       network,
