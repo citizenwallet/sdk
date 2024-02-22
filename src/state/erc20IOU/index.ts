@@ -3,13 +3,13 @@ import { Provider, ContractRunner } from "ethers";
 import { StoreApi, useStore } from "zustand";
 import store, { ERC20IOUStore } from "./state";
 
-import { ERC20IOUContract } from "../../contracts/ERC20IOU";
+import { ERC20IOUContractService } from "../../services/contracts/ERC20IOU";
 
 /**
  * Represents a way to interact with an ERC20IOUActions contract.
  */
 export class ERC20IOUActions {
-  contract: ERC20IOUContract;
+  contract: ERC20IOUContractService;
   store: StoreApi<ERC20IOUStore>;
 
   /**
@@ -19,7 +19,7 @@ export class ERC20IOUActions {
    */
   constructor(contractAddress: string, signer: ContractRunner) {
     // instantiate rpc provider
-    this.contract = new ERC20IOUContract(contractAddress, signer);
+    this.contract = new ERC20IOUContractService(contractAddress, signer);
 
     this.store = store;
   }
