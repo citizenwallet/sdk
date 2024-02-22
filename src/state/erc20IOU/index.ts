@@ -1,29 +1,21 @@
 import { useRef } from "react";
-import {
-  Provider,
-  Contract,
-  solidityPackedKeccak256,
-  Signer,
-  getBytes,
-  ContractRunner,
-} from "ethers";
+import { Provider, ContractRunner } from "ethers";
 import { StoreApi, useStore } from "zustand";
 import store, { ERC20IOUStore } from "./state";
 
-import ERC20IOUAbi from "smartcontracts/build/contracts/erc20IOU/ERC20IOU.abi.json";
 import { ERC20IOUContract } from "../../contracts/ERC20IOU";
 
 /**
- * Represents a way to interact with an ERC20IOU contract.
+ * Represents a way to interact with an ERC20IOUActions contract.
  */
-export class ERC20IOU {
+export class ERC20IOUActions {
   contract: ERC20IOUContract;
   store: StoreApi<ERC20IOUStore>;
 
   /**
-   * Creates an instance of ERC20IOU.
+   * Creates an instance of ERC20IOUActions.
    * @param provider - The RPC provider.
-   * @param contractAddress - The address of the ERC20IOU contract.
+   * @param contractAddress - The address of the ERC20IOUActions contract.
    */
   constructor(contractAddress: string, signer: ContractRunner) {
     // instantiate rpc provider
@@ -100,16 +92,21 @@ export class ERC20IOU {
 }
 
 /**
- * Custom hook for interacting with ERC20IOU contract.
+ * Custom hook for interacting with ERC20IOUActions contract.
  * @param provider - The provider object for connecting to the blockchain.
- * @param contractAddress - The address of the ERC20IOU contract.
- * @returns An array containing the useBoundStore function and the ERC20IOU instance.
+ * @param contractAddress - The address of the ERC20IOUActions contract.
+ * @returns An array containing the useBoundStore function and the ERC20IOUActions instance.
  */
-export const useERC20IOU = (contractAddress: string, provider: Provider) => {
-  const erc20IOURef = useRef(new ERC20IOU(contractAddress, provider));
+export const useERC20IOUStore = (
+  contractAddress: string,
+  provider: Provider
+) => {
+  const erc20IOUActionsRef = useRef(
+    new ERC20IOUActions(contractAddress, provider)
+  );
 
   const useBoundStore = (selector: (state: ERC20IOUStore) => unknown) =>
-    useStore(erc20IOURef.current.store, selector);
+    useStore(erc20IOUActionsRef.current.store, selector);
 
-  return [useBoundStore, erc20IOURef.current];
+  return [useBoundStore, erc20IOUActionsRef.current];
 };

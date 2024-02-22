@@ -5,7 +5,7 @@ import { expect } from "chai";
 import ERC20Artifact from "smartcontracts/artifacts/contracts/tokens/UpgradeableBurnableCommunityToken.sol/UpgradeableBurnableCommunityToken.json";
 import ERC20IOUArtifact from "smartcontracts/artifacts/contracts/apps/ERC20IOU.sol/ERC20IOU.json";
 
-import { ERC20IOU, getLocalHash, getSignedHash } from "../../src";
+import { ERC20IOUActions, getLocalHash, getSignedHash } from "../../src";
 import { Contract } from "ethers";
 
 describe("ERC20IOU", () => {
@@ -47,7 +47,10 @@ describe("ERC20IOU", () => {
 
     await token.mint(owner.address, 100, "hello");
 
-    const erc20IOU = new ERC20IOU(await tokeniou.getAddress(), friend1);
+    const erc20IOUActions = new ERC20IOUActions(
+      await tokeniou.getAddress(),
+      friend1
+    );
 
     return {
       network,
@@ -57,40 +60,48 @@ describe("ERC20IOU", () => {
       owner,
       friend1,
       friend2,
-      erc20IOU,
+      erc20IOUActions,
     };
   }
 
   it("stores the hash", async () => {
-    const { erc20IOU, friend1, current } = await loadFixture(
+    const { erc20IOUActions, friend1, current } = await loadFixture(
       deployTokenIOUFixture
     );
 
-    erc20IOU.store.getState().reset();
+    erc20IOUActions.store.getState().reset();
 
-    let state = erc20IOU.store.getState();
+    let state = erc20IOUActions.store.getState();
 
     expect(state.hash).to.equal(undefined);
 
-    await erc20IOU.getHash(friend1.address, 100n, current + 300, current, 0n);
+    await erc20IOUActions.getHash(
+      friend1.address,
+      100n,
+      current + 300,
+      current,
+      0n
+    );
 
-    state = erc20IOU.store.getState();
+    state = erc20IOUActions.store.getState();
 
     expect(state.hash).not.to.equal(undefined);
   });
 
   it("does not store a hash if fail", async () => {
-    const { erc20IOU, current } = await loadFixture(deployTokenIOUFixture);
+    const { erc20IOUActions, current } = await loadFixture(
+      deployTokenIOUFixture
+    );
 
-    erc20IOU.store.getState().reset();
+    erc20IOUActions.store.getState().reset();
 
-    let state = erc20IOU.store.getState();
+    let state = erc20IOUActions.store.getState();
 
     expect(state.hash).to.equal(undefined);
 
-    await erc20IOU.getHash("0x123", 100n, current + 300, current, 0n);
+    await erc20IOUActions.getHash("0x123", 100n, current + 300, current, 0n);
 
-    state = erc20IOU.store.getState();
+    state = erc20IOUActions.store.getState();
 
     expect(state.hash).to.equal(undefined);
     expect(state.loading).to.equal(false);
@@ -98,14 +109,20 @@ describe("ERC20IOU", () => {
   });
 
   it("redeems a valid hash", async () => {
-    const { erc20IOU, token, tokeniou, owner, friend1, current } =
+    const { erc20IOUActions, token, tokeniou, owner, friend1, current } =
       await loadFixture(deployTokenIOUFixture);
 
-    erc20IOU.store.getState().reset();
+    erc20IOUActions.store.getState().reset();
 
-    await erc20IOU.getHash(owner.address, 1n, current + 300, current, 0n);
+    await erc20IOUActions.getHash(
+      owner.address,
+      1n,
+      current + 300,
+      current,
+      0n
+    );
 
-    let state = erc20IOU.store.getState();
+    let state = erc20IOUActions.store.getState();
 
     expect(state.hash).not.to.equal(undefined);
 
@@ -120,7 +137,7 @@ describe("ERC20IOU", () => {
 
     expect(await token.balanceOf(friend1.address)).to.equal(0);
 
-    await erc20IOU.redeem(
+    await erc20IOUActions.redeem(
       owner.address,
       1n,
       current + 300,
@@ -129,7 +146,7 @@ describe("ERC20IOU", () => {
       signedHash
     );
 
-    state = erc20IOU.store.getState();
+    state = erc20IOUActions.store.getState();
 
     expect(state.loading).to.equal(false);
     expect(state.error).to.equal(false);
@@ -138,7 +155,7 @@ describe("ERC20IOU", () => {
 
     // redeeming the same hash again should fail
 
-    await erc20IOU.redeem(
+    await erc20IOUActions.redeem(
       owner.address,
       1n,
       current + 300,
@@ -147,17 +164,24 @@ describe("ERC20IOU", () => {
       signedHash
     );
 
-    state = erc20IOU.store.getState();
+    state = erc20IOUActions.store.getState();
 
     expect(state.loading).to.equal(false);
     expect(state.error).to.equal(true);
   });
 
   it("redeems a valid locally constructed hash", async () => {
-    const { network, erc20IOU, token, tokeniou, owner, friend1, current } =
-      await loadFixture(deployTokenIOUFixture);
+    const {
+      network,
+      erc20IOUActions,
+      token,
+      tokeniou,
+      owner,
+      friend1,
+      current,
+    } = await loadFixture(deployTokenIOUFixture);
 
-    erc20IOU.store.getState().reset();
+    erc20IOUActions.store.getState().reset();
 
     const hash = getLocalHash(
       owner.address,
@@ -178,7 +202,7 @@ describe("ERC20IOU", () => {
 
     expect(await token.balanceOf(friend1.address)).to.equal(0);
 
-    await erc20IOU.redeem(
+    await erc20IOUActions.redeem(
       owner.address,
       1n,
       current + 300,
@@ -187,7 +211,7 @@ describe("ERC20IOU", () => {
       signedHash
     );
 
-    let state = erc20IOU.store.getState();
+    let state = erc20IOUActions.store.getState();
 
     expect(state.loading).to.equal(false);
     expect(state.error).to.equal(false);
@@ -196,7 +220,7 @@ describe("ERC20IOU", () => {
 
     // redeeming the same hash again should fail
 
-    await erc20IOU.redeem(
+    await erc20IOUActions.redeem(
       owner.address,
       1n,
       current + 300,
@@ -205,7 +229,7 @@ describe("ERC20IOU", () => {
       signedHash
     );
 
-    state = erc20IOU.store.getState();
+    state = erc20IOUActions.store.getState();
 
     expect(state.loading).to.equal(false);
     expect(state.error).to.equal(true);

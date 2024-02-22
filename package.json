@@ -14,7 +14,10 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc-watch --onSuccess \"npm run build\"",
-    "test": "npx hardhat test",
+    "test": "npx hardhat test test/hardhat/* && npx jest test/jest/*",
+    "test-hardhat": "npx hardhat test test/hardhat/*",
+    "test-jest": "npx jest test/jest/*",
+    "test-jest-watch": "npx jest --watch test/jest/*",
     "manual-publish": "npm publish --access public",
     "postinstall": "cp -a node_modules/smartcontracts/cache ."
   },
