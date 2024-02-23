@@ -39,8 +39,10 @@
     "dist"
   ],
   "devDependencies": {
+    "@account-abstraction/contracts": "^0.6.0",
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "@openzeppelin/hardhat-upgrades": "^3.0.3",
+    "@openzeppelin/test-helpers": "^0.5.16",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.16",
     "@types/react": "^18.2.57",

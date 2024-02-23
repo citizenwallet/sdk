@@ -13,7 +13,7 @@ interface UserOpExtraData {
   description: string;
 }
 
-interface UserOp {
+export interface UserOp {
   sender: string;
   nonce: bigint;
   initCode: Uint8Array;
@@ -40,6 +40,15 @@ interface JsonUserOp {
   paymasterAndData: string;
   signature: string;
 }
+
+const executeCallData = (contractAddress: string, calldata: string) =>
+  ethers.getBytes(
+    accountInterface.encodeFunctionData("execute", [
+      contractAddress,
+      BigInt(0),
+      calldata,
+    ])
+  );
 
 const transferCallData = (
   tokenAddress: string,
@@ -255,6 +264,36 @@ export class BundlerService {
     if (!response?.length) {
       throw new Error("Invalid response");
     }
+
+    return userop;
+  }
+
+  async submit(
+    signer: ethers.Signer,
+    sender: string,
+    contractAddress: string,
+    calldata: string,
+    description?: string
+  ): Promise<UserOp> {
+    const owner = await signer.getAddress();
+
+    const executeCalldata = executeCallData(contractAddress, calldata);
+
+    let userop = await this.prepareUserOp(owner, sender, executeCalldata);
+
+    // get the paymaster to sign the userop
+    userop = await this.paymasterSignUserOp(userop);
+
+    // sign the userop
+    const signature = await this.signUserOp(signer, userop);
+
+    userop.signature = signature;
+
+    // submit the user op
+    await this.submitUserOp(
+      userop,
+      description !== undefined ? { description } : undefined
+    );
 
     return userop;
   }

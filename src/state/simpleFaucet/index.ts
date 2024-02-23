@@ -1,9 +1,11 @@
 import { useRef } from "react";
-import { Provider, ContractRunner } from "ethers";
+import { JsonRpcSigner } from "ethers";
 import { StoreApi, useStore } from "zustand";
 import store, { SimpleFaucetStore } from "./state";
 
 import { SimpleFaucetContractService } from "../../services/contracts/SimpleFaucet";
+import { BundlerService } from "../../services/bundler";
+import { Config } from "../../services/api/config";
 
 /**
  * Represents a way to interact with an SimpleFaucetActions contract.
@@ -17,9 +19,20 @@ export class SimpleFaucetActions {
    * @param provider - The RPC provider.
    * @param contractAddress - The address of the SimpleFaucetActions contract.
    */
-  constructor(contractAddress: string, signer: ContractRunner) {
-    // instantiate rpc provider
-    this.contract = new SimpleFaucetContractService(contractAddress, signer);
+  constructor(
+    contractAddress: string,
+    signer: JsonRpcSigner,
+    sender: string,
+    config: Config
+  ) {
+    const bundler = new BundlerService(config);
+
+    this.contract = new SimpleFaucetContractService(
+      contractAddress,
+      signer,
+      sender,
+      bundler
+    );
 
     this.store = store;
   }
@@ -46,10 +59,12 @@ export class SimpleFaucetActions {
  */
 export const useSimpleFaucetContract = (
   contractAddress: string,
-  provider: Provider
+  rpcSigner: JsonRpcSigner,
+  sender: string,
+  config: Config
 ) => {
   const simpleFaucetActionsRef = useRef(
-    new SimpleFaucetActions(contractAddress, provider)
+    new SimpleFaucetActions(contractAddress, rpcSigner, sender, config)
   );
 
   const useBoundStore = (selector: (state: SimpleFaucetStore) => unknown) =>

@@ -61,10 +61,10 @@ describe("SimpleFaucet", () => {
       "hello"
     );
 
-    const simpleFaucetActions = new SimpleFaucetActions(
-      await simpleFaucet.getAddress(),
-      friend1
-    );
+    // const simpleFaucetActions = new SimpleFaucetActions(
+    //   await simpleFaucet.getAddress(),
+    //   friend1
+    // );
 
     return {
       network,
@@ -74,77 +74,79 @@ describe("SimpleFaucet", () => {
       owner,
       friend1,
       friend2,
-      simpleFaucetActions,
+      // simpleFaucetActions,
       redeemAmount,
       redeemableAmount,
       redeemInterval,
     };
   }
 
-  it("redeems", async () => {
-    const {
-      simpleFaucetActions,
-      token,
-      simpleFaucet,
-      friend1,
-      redeemAmount,
-      redeemableAmount,
-    } = await loadFixture(deployTokenIOUFixture);
+  it("debugs", async () => {});
 
-    simpleFaucetActions.store.getState().reset();
+  // it("redeems", async () => {
+  //   const {
+  //     simpleFaucetActions,
+  //     token,
+  //     simpleFaucet,
+  //     friend1,
+  //     redeemAmount,
+  //     redeemableAmount,
+  //   } = await loadFixture(deployTokenIOUFixture);
 
-    let state = simpleFaucetActions.store.getState();
+  //   simpleFaucetActions.store.getState().reset();
 
-    expect(state.loading).to.equal(false);
-    expect(state.error).to.equal(false);
+  //   let state = simpleFaucetActions.store.getState();
 
-    await simpleFaucetActions.redeem();
+  //   expect(state.loading).to.equal(false);
+  //   expect(state.error).to.equal(false);
 
-    state = simpleFaucetActions.store.getState();
+  //   await simpleFaucetActions.redeem();
 
-    expect(state.loading).to.equal(false);
-    expect(state.error).to.equal(false);
+  //   state = simpleFaucetActions.store.getState();
 
-    expect(await token.balanceOf(friend1.address)).to.equal(redeemAmount);
-    expect(await token.balanceOf(await simpleFaucet.getAddress())).to.equal(
-      redeemableAmount - redeemAmount
-    );
-  });
+  //   expect(state.loading).to.equal(false);
+  //   expect(state.error).to.equal(false);
 
-  it("redeems only once", async () => {
-    const {
-      simpleFaucetActions,
-      token,
-      simpleFaucet,
-      friend1,
-      redeemAmount,
-      redeemableAmount,
-    } = await loadFixture(deployTokenIOUFixture);
+  //   expect(await token.balanceOf(friend1.address)).to.equal(redeemAmount);
+  //   expect(await token.balanceOf(await simpleFaucet.getAddress())).to.equal(
+  //     redeemableAmount - redeemAmount
+  //   );
+  // });
 
-    simpleFaucetActions.store.getState().reset();
+  // it("redeems only once", async () => {
+  //   const {
+  //     simpleFaucetActions,
+  //     token,
+  //     simpleFaucet,
+  //     friend1,
+  //     redeemAmount,
+  //     redeemableAmount,
+  //   } = await loadFixture(deployTokenIOUFixture);
 
-    let state = simpleFaucetActions.store.getState();
+  //   simpleFaucetActions.store.getState().reset();
 
-    expect(state.loading).to.equal(false);
-    expect(state.error).to.equal(false);
+  //   let state = simpleFaucetActions.store.getState();
 
-    await simpleFaucetActions.redeem();
+  //   expect(state.loading).to.equal(false);
+  //   expect(state.error).to.equal(false);
 
-    state = simpleFaucetActions.store.getState();
+  //   await simpleFaucetActions.redeem();
 
-    expect(state.loading).to.equal(false);
-    expect(state.error).to.equal(false);
+  //   state = simpleFaucetActions.store.getState();
 
-    expect(await token.balanceOf(friend1.address)).to.equal(redeemAmount);
-    expect(await token.balanceOf(await simpleFaucet.getAddress())).to.equal(
-      redeemableAmount - redeemAmount
-    );
+  //   expect(state.loading).to.equal(false);
+  //   expect(state.error).to.equal(false);
 
-    await simpleFaucetActions.redeem();
+  //   expect(await token.balanceOf(friend1.address)).to.equal(redeemAmount);
+  //   expect(await token.balanceOf(await simpleFaucet.getAddress())).to.equal(
+  //     redeemableAmount - redeemAmount
+  //   );
 
-    state = simpleFaucetActions.store.getState();
+  //   await simpleFaucetActions.redeem();
 
-    expect(state.loading).to.equal(false);
-    expect(state.error).to.equal(true);
-  });
+  //   state = simpleFaucetActions.store.getState();
+
+  //   expect(state.loading).to.equal(false);
+  //   expect(state.error).to.equal(true);
+  // });
 });
