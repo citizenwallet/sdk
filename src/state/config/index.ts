@@ -4,6 +4,8 @@ import { ConfigService } from "../../services/config";
 import { ApiService } from "../../services/api";
 import { useRef } from "react";
 
+type configStoreSelector = <T>(state: ConfigStore) => T;
+
 export class ConfigActions {
   store: StoreApi<ConfigStore>;
 
@@ -41,12 +43,12 @@ export class ConfigActions {
 
 export const useConfig = (
   baseUrl?: string
-): [(selector: (state: ConfigStore) => unknown) => unknown, ConfigActions] => {
+): [(selector: configStoreSelector) => unknown, ConfigActions] => {
   const configActionsRef = useRef(
     new ConfigActions(baseUrl ? new ApiService(baseUrl) : undefined)
   );
 
-  const useBoundStore = (selector: (state: ConfigStore) => unknown) =>
+  const useBoundStore = (selector: configStoreSelector) =>
     useStore(configActionsRef.current.store, selector);
 
   return [useBoundStore, configActionsRef.current];
