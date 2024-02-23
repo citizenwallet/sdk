@@ -121,6 +121,95 @@ import { ConfigService, ApiService } from '@citizenwallet/sdk';
 const configService = new ConfigService(new ApiService('https://your-custom-base-url.com'));
 ```
 
+# SimpleFaucet
+
+An IOU is a smart contract which manages IOU redemption for a single ERC 20 token. It will hash, verify signatures and keep track of redemptions.
+
+## useSimpleFaucetContract (React with hooks)
+
+Import the SDK into your project:
+
+```
+import { useSimpleFaucetContract } from '@citizenwallet/sdk';
+```
+
+Then, you can use the SDK's functions to interact with the backend. For example:
+
+```
+const [subscribe, actions] = useSimpleFaucetContract(address, signer);
+```
+
+### Trigger actions.
+
+```
+actions.getHash(...);
+
+actions.redeem(...);
+```
+
+### Listen to updates from the store.
+
+```
+const loading = subscribe(state => state.loading);
+const hash = subscribe(state => state.hash);
+```
+
+### Access data directly
+
+```
+const hash = actions.store.getState().hash;
+```
+
+### Example
+
+```
+function Component() {
+    const [subscribe, actions] = useIOUContract(
+        address, // contract address
+        rpcSigner, // ethers JsonRpcSigner
+        sender, // the smart contract account belonging to the signer
+        config, // the community config
+    );
+
+    useEffect(() => {
+        actions.redeem();
+    }, [actions]);
+
+    const loading = subscribe(state => state.loading);
+
+    return (
+        <div>{loading ? 'loading...' : 'redeemed!'}</div>
+    )
+}
+```
+
+## SimpleFaucetContractService (contract)
+
+If you want to make direct calls to the contract and handle everything else yourself.
+
+Import the SDK into your project:
+
+```
+import { SimpleFaucetContractService } from '@citizenwallet/sdk';
+```
+
+Then, you can use the SDK's functions to interact with the backend. For example:
+
+```
+const contract = SimpleFaucetContractService(
+    address, // contract address
+    rpcSigner, // ethers JsonRpcSigner
+    sender, // the smart contract account belonging to the signer
+    config, // the community config
+);
+```
+
+### Trigger calls.
+
+```
+await contract.redeem();
+```
+
 # IOU
 
 An IOU is a smart contract which manages IOU redemption for a single ERC 20 token. It will hash, verify signatures and keep track of redemptions.
@@ -164,7 +253,7 @@ const hash = actions.store.getState().hash;
 
 ```
 function Component() {
-    const [subscribe, actions] = useIOUContract(address, signer);
+const [subscribe, actions] = useIOUContract(address, signer);
 
     useEffect(() => {
         actions.getHash(...);
@@ -176,6 +265,7 @@ function Component() {
     return (
         <div>{loading ? 'loading...' : hash}</div>
     )
+
 }
 ```
 
