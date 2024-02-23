@@ -90,7 +90,10 @@ export const useSimpleFaucetContract = (
   rpcSigner: JsonRpcSigner,
   sender: string,
   config: Config
-) => {
+): [
+  (selector: (state: SimpleFaucetStore) => unknown) => unknown,
+  SimpleFaucetActions
+] => {
   const simpleFaucetActionsRef = useRef(
     new SimpleFaucetActions(contractAddress, rpcSigner, sender, config)
   );

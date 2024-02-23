@@ -97,7 +97,13 @@ export class ERC20IOUActions {
  * @param contractAddress - The address of the ERC20IOUActions contract.
  * @returns An array containing the useBoundStore function and the ERC20IOUActions instance.
  */
-export const useIOUContract = (contractAddress: string, provider: Provider) => {
+export const useIOUContract = (
+  contractAddress: string,
+  provider: Provider
+): [
+  (selector: (state: ERC20IOUStore) => unknown) => unknown,
+  ERC20IOUActions
+] => {
   const erc20IOUActionsRef = useRef(
     new ERC20IOUActions(contractAddress, provider)
   );
