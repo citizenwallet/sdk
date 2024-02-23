@@ -39,7 +39,7 @@ export class ConfigActions {
   }
 }
 
-export const useConfigStore = (baseUrl?: string) => {
+export const useConfig = (baseUrl?: string) => {
   const configActionsRef = useRef(
     new ConfigActions(baseUrl ? new ApiService(baseUrl) : undefined)
   );

@@ -1,15 +1,19 @@
 // General Services
 export { ApiService } from "./services/api";
 
-// ERC20IOU
-export { ERC20IOUActions, useERC20IOUStore } from "./state/erc20IOU";
-export { ERC20IOUContractService } from "./services/contracts/ERC20IOU";
+// IOU
+export { ERC20IOUActions, useIOUContract } from "./state/iou";
+export { IOUContractService } from "./services/contracts/IOU";
+export { getLocalIOUHash, getSignedHash } from "./services/contracts/IOU/utils";
+
+// SimpleFaucet
 export {
-  getLocalHash,
-  getSignedHash,
-} from "./services/contracts/ERC20IOU/utils";
+  SimpleFaucetActions,
+  useSimpleFaucetContract,
+} from "./state/simpleFaucet";
+export { SimpleFaucetContractService } from "./services/contracts/SimpleFaucet";
 
 // Config
-export { ConfigActions, useConfigStore } from "./state/config";
+export { ConfigActions, useConfig } from "./state/config";
 export { ConfigService } from "./services/config";
 export { Config } from "./services/api/config";
