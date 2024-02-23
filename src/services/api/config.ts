@@ -68,7 +68,7 @@ export class ConfigApiService implements BaseConfigApiService {
   }
 
   async get(): Promise<Config[]> {
-    const url = "/communities.json?cacheBuster=" + randomCacheNumber();
+    const url = "/v3/communities.json?cacheBuster=" + randomCacheNumber();
 
     return this.api.get(url);
   }
