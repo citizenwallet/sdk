@@ -11,7 +11,7 @@ import { Signer, getBytes, solidityPackedKeccak256 } from "ethers";
  * @param contract The address of the IOU contract.
  * @returns The local hash of the transaction.
  */
-export const getLocalHash = (
+export const getLocalIOUHash = (
   from: string,
   amount: bigint,
   validUntil: number,
