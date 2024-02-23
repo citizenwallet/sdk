@@ -29,26 +29,26 @@ npm install --save @citizenwallet/sdk
 
 Every community and their currency has a configuration in a json format. These can be retrieved in order to interact with the community in question.
 
-## useConfigStore (React with hooks)
+## useConfig (React with hooks)
 
 We have created methods that you can call with state management, so that you can focus on building your user interface.
 
 ```
-import { useConfigStore } from '@citizenwallet/sdk';
+import { useConfig } from '@citizenwallet/sdk';
 ```
 
 ### Fetch all configs
 
 ```
 function MyComponent() {
-    const [listener, actions] = useConfigStore();
+    const [subscribe, actions] = useConfig();
 
     useEffect(() => {
         actions.getConfigs();
     }, [actions])
 
-    const configs = listener(state => state.configs); // the component will re-render whenever .configs changes
-    const loading = listener(state => state.loading); // same here with loading
+    const configs = subscribe(state => state.configs); // the component will re-render whenever .configs changes
+    const loading = subscribe(state => state.loading); // same here with loading
 
     return (
         <div>
@@ -62,14 +62,14 @@ function MyComponent() {
 
 ```
 function MyComponent({ slug }) {
-    const [listener, actions] = useConfigStore();
+    const [subscribe, actions] = useConfig();
 
     useEffect(() => {
         actions.getConfig(slug); // fetch for a slug and any time the slug changes
     }, [actions, slug])
 
-    const config = listener(state => state.config); // the component will re-render whenever .config changes
-    const loading = listener(state => state.loading); // same here with loading
+    const config = subscribe(state => state.config); // the component will re-render whenever .config changes
+    const loading = subscribe(state => state.loading); // same here with loading
 
     return (
         <div>
@@ -108,9 +108,9 @@ const config = await configService.getBySlug('my-slug'); // a single config
 You can point the service at another base url, if you have your own place where a `communities.json` file is stored.
 
 ```
-import { useConfigStore } from '@citizenwallet/sdk';
+import { useConfig } from '@citizenwallet/sdk';
 
-const [listener, actions] = useConfigStore('https://your-custom-base-url.com');
+const [subscribe, actions] = useConfig('https://your-custom-base-url.com');
 ```
 
 You can do the same with the ConfigService.
@@ -121,22 +121,22 @@ import { ConfigService, ApiService } from '@citizenwallet/sdk';
 const configService = new ConfigService(new ApiService('https://your-custom-base-url.com'));
 ```
 
-# ERC20IOU
+# IOU
 
-An ERC20IOU is a smart contract which manages IOU redemption for a single ERC 20 token. It will hash, verify signatures and keep track of redemptions.
+An IOU is a smart contract which manages IOU redemption for a single ERC 20 token. It will hash, verify signatures and keep track of redemptions.
 
-## useERC20IOUStore (React with hooks)
+## useIOUContract (React with hooks)
 
 Import the SDK into your project:
 
 ```
-import { useERC20IOUStore } from '@citizenwallet/sdk';
+import { useIOUContract } from '@citizenwallet/sdk';
 ```
 
 Then, you can use the SDK's functions to interact with the backend. For example:
 
 ```
-const [listener, actions] = useERC20IOUStore(address, signer);
+const [subscribe, actions] = useIOUContract(address, signer);
 ```
 
 ### Trigger actions.
@@ -150,8 +150,8 @@ actions.redeem(...);
 ### Listen to updates from the store.
 
 ```
-const loading = listener(state => state.loading);
-const hash = listener(state => state.hash);
+const loading = subscribe(state => state.loading);
+const hash = subscribe(state => state.hash);
 ```
 
 ### Access data directly
@@ -164,14 +164,14 @@ const hash = actions.store.getState().hash;
 
 ```
 function Component() {
-    const [listener, actions] = useERC20IOUStore(address, signer);
+    const [subscribe, actions] = useIOUContract(address, signer);
 
     useEffect(() => {
         actions.getHash(...);
     }, [actions]);
 
-    const loading = listener(state => state.loading);
-    const hash = listener(state => state.hash);
+    const loading = subscribe(state => state.loading);
+    const hash = subscribe(state => state.hash);
 
     return (
         <div>{loading ? 'loading...' : hash}</div>
@@ -179,20 +179,20 @@ function Component() {
 }
 ```
 
-## ERC20IOUContractService (contract)
+## IOUContractService (contract)
 
 If you want to make direct calls to the contract and handle everything else yourself.
 
 Import the SDK into your project:
 
 ```
-import { ERC20IOUContractService } from '@citizenwallet/sdk';
+import { IOUContractService } from '@citizenwallet/sdk';
 ```
 
 Then, you can use the SDK's functions to interact with the backend. For example:
 
 ```
-const contract = ERC20IOUContractService(address, signer);
+const contract = IOUContractService(address, signer);
 ```
 
 ### Trigger calls.

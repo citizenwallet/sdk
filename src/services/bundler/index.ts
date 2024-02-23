@@ -54,6 +54,19 @@ const transferCallData = (
     ])
   );
 
+const approveCallData = (
+  tokenAddress: string,
+  issuer: string,
+  amount: bigint
+) =>
+  ethers.getBytes(
+    accountInterface.encodeFunctionData("execute", [
+      tokenAddress,
+      BigInt(0),
+      erc20Token.encodeFunctionData("approve", [issuer, amount]),
+    ])
+  );
+
 const getEmptyUserOp = (sender: string): UserOp => ({
   sender,
   nonce: BigInt(0),
@@ -97,7 +110,6 @@ const userOpToJson = (userop: UserOp): JsonUserOp => {
 };
 
 const userOpFromJson = (userop: JsonUserOp): UserOp => {
-  console.log("userop >>", userop);
   const newUserop: UserOp = {
     sender: userop.sender,
     nonce: BigInt(userop.nonce),

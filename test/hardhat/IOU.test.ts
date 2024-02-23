@@ -8,7 +8,7 @@ import ERC20IOUArtifact from "smartcontracts/artifacts/contracts/apps/ERC20IOU.s
 import { ERC20IOUActions, getLocalHash, getSignedHash } from "../../src";
 import { Contract } from "ethers";
 
-describe("ERC20IOU", () => {
+describe("IOU", () => {
   async function deployTokenIOUFixture() {
     const [owner, friend1, friend2] = await ethers.getSigners();
 
