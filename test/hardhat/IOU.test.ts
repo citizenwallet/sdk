@@ -5,10 +5,10 @@ import { expect } from "chai";
 import ERC20Artifact from "smartcontracts/artifacts/contracts/tokens/UpgradeableBurnableCommunityToken.sol/UpgradeableBurnableCommunityToken.json";
 import ERC20IOUArtifact from "smartcontracts/artifacts/contracts/apps/ERC20IOU.sol/ERC20IOU.json";
 
-import { ERC20IOUActions, getLocalHash, getSignedHash } from "../../src";
+import { ERC20IOUActions, getLocalIOUHash, getSignedHash } from "../../src";
 import { Contract } from "ethers";
 
-describe("ERC20IOU", () => {
+describe("IOU", () => {
   async function deployTokenIOUFixture() {
     const [owner, friend1, friend2] = await ethers.getSigners();
 
@@ -183,7 +183,7 @@ describe("ERC20IOU", () => {
 
     erc20IOUActions.store.getState().reset();
 
-    const hash = getLocalHash(
+    const hash = getLocalIOUHash(
       owner.address,
       1n,
       current + 300,

@@ -24,7 +24,7 @@ export interface Config {
     url: string;
   };
   node: {
-    chainId: number;
+    chainId?: number;
     url: string;
     ws_url: string;
   };
@@ -51,6 +51,7 @@ export interface Config {
     name: string;
     icon: string;
     url: string;
+    launch_mode?: string;
   }[];
   version: number;
 }

@@ -14,12 +14,12 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc-watch --onSuccess \"npm run build\"",
+    "pretest": "cp -a node_modules/smartcontracts/cache .",
     "test": "npx hardhat test test/hardhat/* && npx jest test/jest/*",
     "test-hardhat": "npx hardhat test test/hardhat/*",
     "test-jest": "npx jest test/jest/*",
     "test-jest-watch": "npx jest --watch test/jest/*",
-    "manual-publish": "npm publish --access public",
-    "postinstall": "cp -a node_modules/smartcontracts/cache ."
+    "manual-publish": "npm publish --access public"
   },
   "keywords": [
     "web3",
@@ -39,8 +39,10 @@
     "dist"
   ],
   "devDependencies": {
+    "@account-abstraction/contracts": "^0.6.0",
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "@openzeppelin/hardhat-upgrades": "^3.0.3",
+    "@openzeppelin/test-helpers": "^0.5.16",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.16",
     "@types/react": "^18.2.57",
@@ -58,7 +60,7 @@
     "i": "^0.3.7",
     "npm": "^10.4.0",
     "react": "^18.2.0",
-    "smartcontracts": "github:citizenwallet/smartcontracts#v0.0.75",
+    "smartcontracts": "github:citizenwallet/smartcontracts#v0.0.76",
     "zustand": "^4.5.0"
   }
 }
