@@ -39,7 +39,9 @@ export class ConfigActions {
   }
 }
 
-export const useConfig = (baseUrl?: string) => {
+export const useConfig = (
+  baseUrl?: string
+): [(selector: (state: ConfigStore) => unknown) => unknown, ConfigActions] => {
   const configActionsRef = useRef(
     new ConfigActions(baseUrl ? new ApiService(baseUrl) : undefined)
   );
