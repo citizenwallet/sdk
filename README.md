@@ -164,7 +164,7 @@ const hash = actions.store.getState().hash;
 
 ```
 function Component() {
-    const [subscribe, actions] = useIOUContract(
+    const [subscribe, actions] = useSimpleFaucetContract(
         address, // contract address
         rpcSigner, // ethers JsonRpcSigner
         sender, // the smart contract account belonging to the signer
@@ -172,13 +172,20 @@ function Component() {
     );
 
     useEffect(() => {
+        actions.fetchMetadata();
         actions.redeem();
     }, [actions]);
 
     const loading = subscribe(state => state.loading);
+    const metadataLoading = subscribe(state => state.metadataLoading);
+    const tokenAddress = subscribe(state => state.tokenAddress);
+    const redeemAmount = subscribe(state => state.amount);
 
     return (
-        <div>{loading ? 'loading...' : 'redeemed!'}</div>
+        <div>
+        {metadataLoading? : 'loading meta data' : `token: ${tokenAddress} redeem amount: ${redeemAmount}`}
+        {loading ? 'loading...' : 'redeemed!'}
+        </div>
     )
 }
 ```
