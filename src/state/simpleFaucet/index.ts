@@ -38,6 +38,34 @@ export class SimpleFaucetActions {
   }
 
   /**
+   * Fetches the metadata for the simple faucet.
+   * This function retrieves the token, amount, redeem interval, and redeem admin from the contract
+   * and updates the store with the fetched metadata.
+   * If an error occurs during the fetch, it updates the store with a failed state.
+   */
+  async fetchMetadata() {
+    try {
+      this.store.getState().requestMetadata();
+
+      const [token, amount, redeemInterval, redeemAdmin] = await Promise.all([
+        this.contract.token(),
+        this.contract.amount(),
+        this.contract.redeemInterval(),
+        this.contract.redeemAdmin(),
+      ]);
+
+      this.store.getState().fetchContractMetadataSuccess({
+        token,
+        amount,
+        redeemInterval,
+        redeemAdmin,
+      });
+    } catch (error) {
+      this.store.getState().requestMetadataFailed();
+    }
+  }
+
+  /**
    * Redeems ERC20 IOU tokens.
    */
   async redeem() {
