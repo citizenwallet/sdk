@@ -16,7 +16,7 @@ export type ConfigStore = {
 const getInitialState = () => ({
   config: undefined,
   configs: undefined,
-  loading: false,
+  loading: true,
   error: false,
 });
 

@@ -5,7 +5,7 @@ import store, { ERC20IOUStore } from "./state";
 
 import { IOUContractService } from "../../services/contracts/IOU";
 
-type erc20IOUStoreSelector = <T>(state: ERC20IOUStore) => T;
+type erc20IOUStoreSelector<T> = (state: ERC20IOUStore) => T;
 
 /**
  * Represents a way to interact with an ERC20IOUActions contract.
@@ -102,12 +102,12 @@ export class ERC20IOUActions {
 export const useIOUContract = (
   contractAddress: string,
   provider: Provider
-): [(selector: erc20IOUStoreSelector) => unknown, ERC20IOUActions] => {
+): [<T>(selector: erc20IOUStoreSelector<T>) => T, ERC20IOUActions] => {
   const erc20IOUActionsRef = useRef(
     new ERC20IOUActions(contractAddress, provider)
   );
 
-  const useBoundStore = (selector: erc20IOUStoreSelector) =>
+  const useBoundStore = <T>(selector: erc20IOUStoreSelector<T>) =>
     useStore(erc20IOUActionsRef.current.store, selector);
 
   return [useBoundStore, erc20IOUActionsRef.current];
