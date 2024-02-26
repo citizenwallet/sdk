@@ -7,7 +7,7 @@ import { SimpleFaucetContractService } from "../../services/contracts/SimpleFauc
 import { BundlerService } from "../../services/bundler";
 import { Config } from "../../services/api/config";
 
-type simpleFaucetStoreSelector = <T>(state: SimpleFaucetStore) => T;
+type simpleFaucetStoreSelector<T> = (state: SimpleFaucetStore) => T;
 
 /**
  * Represents a way to interact with an SimpleFaucetActions contract.
@@ -92,13 +92,13 @@ export const useSimpleFaucetContract = (
   rpcSigner: JsonRpcSigner,
   sender: string,
   config: Config
-): [(selector: simpleFaucetStoreSelector) => unknown, SimpleFaucetActions] => {
+): [<T>(selector: simpleFaucetStoreSelector<T>) => T, SimpleFaucetActions] => {
   const simpleFaucetActionsRef = useRef(
     new SimpleFaucetActions(contractAddress, rpcSigner, sender, config)
   );
 
-  const useBoundStore = (selector: simpleFaucetStoreSelector) =>
-    useStore(simpleFaucetActionsRef.current.store, selector);
+  const useBoundStore = <T>(selector: simpleFaucetStoreSelector<T>) =>
+    useStore(simpleFaucetActionsRef.current.store, selector); // TODO: fix the type: (selector: simpleFaucetStoreSelector) => unknown
 
   return [useBoundStore, simpleFaucetActionsRef.current];
 };

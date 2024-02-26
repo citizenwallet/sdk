@@ -60,7 +60,7 @@
     "i": "^0.3.7",
     "npm": "^10.4.0",
     "react": "^18.2.0",
-    "smartcontracts": "github:citizenwallet/smartcontracts#v0.0.76",
+    "smartcontracts": "github:citizenwallet/smartcontracts#v0.0.79",
     "zustand": "^4.5.0"
   }
 }

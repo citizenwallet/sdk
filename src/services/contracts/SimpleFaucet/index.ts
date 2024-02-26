@@ -1,4 +1,4 @@
-import { Contract, ContractRunner, JsonRpcSigner, ethers } from "ethers";
+import { Contract, JsonRpcSigner, ethers } from "ethers";
 
 import SimpleFaucetAbi from "smartcontracts/build/contracts/simpleFaucet/SimpleFaucet.abi.json";
 import { BundlerService, UserOp } from "../../bundler";
