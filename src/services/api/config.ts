@@ -24,7 +24,7 @@ export interface Config {
     url: string;
   };
   node: {
-    chainId?: number;
+    chainId: number;
     url: string;
     ws_url: string;
   };
