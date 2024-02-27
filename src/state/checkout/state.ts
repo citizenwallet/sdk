@@ -25,6 +25,11 @@ export type CheckoutStore = {
   checkAmountRequest: () => void;
   checkAmountSuccess: (amountToPay: bigint) => void;
   checkAmountFailed: () => void;
+  createLoading: boolean;
+  createError: boolean;
+  createRequest: () => void;
+  createSuccess: () => void;
+  createFailed: () => void;
   reset: () => void;
 };
 
@@ -44,6 +49,8 @@ const getInitialState = () => ({
     loading: false,
     error: false,
   },
+  createLoading: false,
+  createError: false,
 });
 
 export default createStore<CheckoutStore>((set) => ({
@@ -84,5 +91,20 @@ export default createStore<CheckoutStore>((set) => ({
     set((state) => ({
       amountToPay: { ...state.amountToPay, loading: false, error: true },
     })),
+  createRequest: () =>
+    set({
+      createLoading: true,
+      createError: false,
+    }),
+  createSuccess: () =>
+    set({
+      createLoading: false,
+      createError: false,
+    }),
+  createFailed: () =>
+    set({
+      createLoading: false,
+      createError: true,
+    }),
   reset: () => set(getInitialState()),
 }));
