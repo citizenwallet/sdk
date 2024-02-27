@@ -30,7 +30,7 @@ describe("Config", () => {
   it("get a config using a slug with the store", async () => {
     const state = configActions.store.getState();
 
-    expect(state.loading).toBe(false);
+    expect(state.loading).toBe(true);
     expect(state.error).toBe(false);
     expect(state.config).toBe(undefined);
 
@@ -47,7 +47,7 @@ describe("Config", () => {
   it("get all configs with the store", async () => {
     const state = configActions.store.getState();
 
-    expect(state.loading).toBe(false);
+    expect(state.loading).toBe(true);
     expect(state.error).toBe(false);
     expect(state.configs).toBe(undefined);
 
@@ -64,7 +64,7 @@ describe("Config", () => {
   it("fail to get with the wrong slug with the store", async () => {
     const state = configActions.store.getState();
 
-    expect(state.loading).toBe(false);
+    expect(state.loading).toBe(true);
     expect(state.error).toBe(false);
     expect(state.config).toBe(undefined);
 
