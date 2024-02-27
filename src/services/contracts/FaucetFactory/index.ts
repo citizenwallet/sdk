@@ -2,8 +2,6 @@ import {
   BaseWallet,
   Contract,
   JsonRpcProvider,
-  JsonRpcSigner,
-  TransactionRequest,
   TransactionResponse,
   ethers,
 } from "ethers";
