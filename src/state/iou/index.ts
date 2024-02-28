@@ -10,7 +10,7 @@ type erc20IOUStoreSelector<T> = (state: ERC20IOUStore) => T;
 /**
  * Represents a way to interact with an ERC20IOUActions contract.
  */
-export class ERC20IOUActions {
+export class ERC20IOUContractActions {
   contract: IOUContractService;
   store: StoreApi<ERC20IOUStore>;
 
@@ -102,9 +102,9 @@ export class ERC20IOUActions {
 export const useIOUContract = (
   contractAddress: string,
   provider: Provider
-): [<T>(selector: erc20IOUStoreSelector<T>) => T, ERC20IOUActions] => {
+): [<T>(selector: erc20IOUStoreSelector<T>) => T, ERC20IOUContractActions] => {
   const erc20IOUActionsRef = useRef(
-    new ERC20IOUActions(contractAddress, provider)
+    new ERC20IOUContractActions(contractAddress, provider)
   );
 
   const useBoundStore = <T>(selector: erc20IOUStoreSelector<T>) =>

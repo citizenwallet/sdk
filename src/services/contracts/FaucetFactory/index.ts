@@ -3,6 +3,7 @@ import {
   Contract,
   JsonRpcProvider,
   TransactionResponse,
+  WebSocketProvider,
   ethers,
 } from "ethers";
 
@@ -10,18 +11,18 @@ import FaucetFactoryAbi from "smartcontracts/build/contracts/faucetFactory/Fauce
 
 export const faucetFactory = new ethers.Interface(FaucetFactoryAbi);
 
-export class FaucetFactoryService {
+export class FaucetFactoryContractService {
   /**
    * The contract instance.
    */
   contractAddress: string;
-  provider: JsonRpcProvider;
+  provider: WebSocketProvider | JsonRpcProvider;
   signer: BaseWallet;
   contract: Contract;
 
   constructor(
     contractAddress: string,
-    provider: JsonRpcProvider,
+    provider: WebSocketProvider | JsonRpcProvider,
     signer: BaseWallet
   ) {
     this.contractAddress = contractAddress;
@@ -65,6 +66,24 @@ export class FaucetFactoryService {
     redeemAdmin: string
   ): Promise<TransactionResponse> {
     return this.contract.getFunction("createSimpleFaucet")(
+      owner,
+      salt,
+      tokenAddress,
+      redeemAmount,
+      redeemInterval,
+      redeemAdmin
+    );
+  }
+
+  async getSimpleFaucetAddress(
+    owner: string,
+    salt: number,
+    tokenAddress: string,
+    redeemAmount: number,
+    redeemInterval: number,
+    redeemAdmin: string
+  ): Promise<string> {
+    return this.contract.getFunction("getSimpleFaucetAddress")(
       owner,
       salt,
       tokenAddress,

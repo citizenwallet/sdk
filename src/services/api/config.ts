@@ -1,6 +1,14 @@
 import { Api, BaseApi } from "./api";
 import { randomCacheNumber } from "./utils";
 
+export interface ConfigToken {
+  address: string;
+  standard: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+}
+
 export interface Config {
   community: {
     name: string;
@@ -37,13 +45,7 @@ export interface Config {
     paymaster_type: string;
     gas_extra_percentage?: number;
   };
-  token: {
-    address: string;
-    standard: string;
-    name: string;
-    symbol: string;
-    decimals: number;
-  };
+  token: ConfigToken;
   profile: {
     address: string;
   };
