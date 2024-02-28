@@ -31,6 +31,32 @@ export class FaucetFactoryContractService {
     this.contract = new Contract(contractAddress, FaucetFactoryAbi, signer);
   }
 
+  async estimateCreateSimpleFaucetWithDefaults(
+    salt: number,
+    tokenAddress: string,
+    redeemAmount: number,
+    redeemInterval: number
+  ): Promise<bigint> {
+    const wallet = ethers.Wallet.createRandom();
+
+    const gas = await this.contract
+      .getFunction("createSimpleFaucet")
+      .estimateGas(
+        wallet.address,
+        salt,
+        tokenAddress,
+        redeemAmount,
+        redeemInterval,
+        wallet.address
+      );
+
+    const { maxFeePerGas } = await this.provider.getFeeData();
+
+    const estimatedCost = gas * (maxFeePerGas || 1n);
+
+    return estimatedCost + estimatedCost / 10n;
+  }
+
   async estimateCreateSimpleFaucet(
     owner: string,
     salt: number,
