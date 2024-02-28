@@ -14,7 +14,10 @@ export class SessionService {
   wsUrl: string;
   accountFactoryService: AccountFactoryService;
 
+  rpcProvider: JsonRpcProvider;
+
   provider?: WebSocketProvider;
+  owner?: string;
   accountAddress?: string;
   constructor(
     provider: JsonRpcProvider,
@@ -23,6 +26,7 @@ export class SessionService {
     signer?: BaseWallet
   ) {
     this.wsUrl = wsUrl;
+    this.rpcProvider = provider;
 
     if (signer) {
       this.signer = signer.connect(provider);
@@ -31,10 +35,12 @@ export class SessionService {
         this.signer
       );
       localStorage.setItem("cw-session-key", signer.signingKey.privateKey);
+      this.getOwner();
       return;
     }
 
     const key = localStorage.getItem("cw-session-key");
+    this.getOwner();
     if (key) {
       const wallet = new Wallet(key);
       this.signer = wallet.connect(provider);
@@ -60,15 +66,37 @@ export class SessionService {
     accountFactoryAddress: string
   ) {
     this.wsUrl = wsUrl;
+    this.rpcProvider = provider;
+
     this.signer.provider?.destroy();
     this.signer = this.signer.connect(provider);
     this.accountFactoryService = new AccountFactoryService(
       accountFactoryAddress,
       this.signer
     );
+    this.getOwner();
   }
 
-  async getAddress(): Promise<string> {
+  setOwner(owner: string) {
+    this.owner = owner;
+    localStorage.setItem("cw-session-owner", owner);
+  }
+
+  getOwner(): string | undefined {
+    if (this.owner) {
+      return this.owner;
+    }
+
+    const owner = localStorage.getItem("cw-session-owner");
+    if (owner) {
+      this.owner = owner;
+      return owner;
+    }
+
+    return;
+  }
+
+  getAddress(): string {
     return this.signer.address;
   }
 
@@ -95,14 +123,14 @@ export class SessionService {
 
   // handling ws provider disconnects/reconnects: https://github.com/ethers-io/ethers.js/issues/1053
 
-  listenForBlock(callback: () => void) {
+  listenForBlock(callback: (blockNumber: number) => void) {
     if (this.provider) {
       this.provider.destroy();
     }
 
     this.provider = createWebSocketProvider(this.wsUrl);
-    this.provider.on("block", async (_) => {
-      callback();
+    this.provider.on("block", (blockNumber: number) => {
+      callback(blockNumber);
     });
   }
 
@@ -121,5 +149,19 @@ export class SessionService {
       to,
       value: amount,
     });
+  }
+
+  reset() {
+    this.owner = undefined;
+    localStorage.removeItem("cw-session-key");
+    localStorage.removeItem("cw-session-owner");
+
+    const wallet = Wallet.createRandom();
+    this.signer = wallet.connect(this.rpcProvider);
+    this.accountFactoryService = new AccountFactoryService(
+      this.accountFactoryService.contractAddress,
+      this.signer
+    );
+    localStorage.setItem("cw-session-key", wallet.privateKey);
   }
 }
