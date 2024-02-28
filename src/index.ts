@@ -6,13 +6,16 @@ export { ContractActions, useContract } from "./state/contract";
 export { GenericContractService } from "./services/contracts/generic";
 
 // IOU
-export { ERC20IOUActions, useIOUContract } from "./state/iou";
+export { ERC20IOUContractActions, useIOUContract } from "./state/iou";
 export { IOUContractService } from "./services/contracts/IOU";
 export { getLocalIOUHash, getSignedHash } from "./services/contracts/IOU/utils";
 
 // FaucetFactory
-// export { FaucetFactoryActions, useFaucetFactoryContract } from "./state/faucetFactory";
-export { FaucetFactoryService } from "./services/contracts/FaucetFactory";
+export {
+  FaucetFactoryContractActions,
+  useFaucetFactoryContract,
+} from "./state/faucetFactory";
+export { FaucetFactoryContractService } from "./services/contracts/FaucetFactory";
 
 // SimpleFaucet
 export {
@@ -29,3 +32,7 @@ export { Config } from "./services/api/config";
 // Checkout
 export { CheckoutActions, useCheckout } from "./state/checkout";
 export { SessionService } from "./services/session";
+
+// Token Checkout
+export { TokenCheckoutActions, useTokenCheckout } from "./state/tokenCheckout";
+export { ERC20Service } from "./services/contracts/ERC20";

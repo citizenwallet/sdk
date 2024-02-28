@@ -1,21 +1,23 @@
 import { StoreApi, useStore } from "zustand";
-import store, { CheckoutStore } from "./state";
+import store, { TokenCheckoutStore } from "./state";
 import { useEffect, useRef } from "react";
 import { SessionService } from "../../services/session";
 import { BaseWallet, JsonRpcProvider } from "ethers";
-import { Config, ConfigToken } from "../../services/api/config";
+import { Config } from "../../services/api/config";
 import { ERC20Service } from "../../services/contracts/ERC20";
 
-type checkoutStoreSelector<T> = (state: CheckoutStore) => T;
+type checkoutStoreSelector<T> = (state: TokenCheckoutStore) => T;
 
-export class CheckoutActions {
-  store: StoreApi<CheckoutStore>;
+export class TokenCheckoutActions {
+  store: StoreApi<TokenCheckoutStore>;
 
   sessionService: SessionService;
+  token: ERC20Service;
 
   constructor(
     provider: JsonRpcProvider,
     wsUrl: string,
+    tokenAddress: string,
     accountFactoryAddress: string,
     signer?: BaseWallet | undefined
   ) {
@@ -26,15 +28,18 @@ export class CheckoutActions {
       accountFactoryAddress,
       signer
     );
+    this.token = new ERC20Service(tokenAddress, this.sessionService.signer);
   }
 
   updateProvider(
     provider: JsonRpcProvider,
     wsUrl: string,
+    tokenAddress: string,
     accountFactoryAddress: string
   ) {
     this.stopListeners();
     this.sessionService.updateProvider(provider, wsUrl, accountFactoryAddress);
+    this.token = new ERC20Service(tokenAddress, this.sessionService.signer);
 
     this.store.getState().reset();
   }
@@ -49,7 +54,7 @@ export class CheckoutActions {
       this.store.getState().checkSessionBalanceRequest();
 
       const address = await this.sessionService.getAddress();
-      const balance = await this.sessionService.getBalance();
+      const balance = await this.token.balanceOf(address);
 
       this.store.getState().checkSessionAddressSuccess(address);
       this.store.getState().checkSessionBalanceSuccess(balance);
@@ -71,11 +76,12 @@ export class CheckoutActions {
     }
   }
 
-  private createBlockHandler(store: StoreApi<CheckoutStore>) {
+  private createBlockHandler(store: StoreApi<TokenCheckoutStore>) {
     return async () => {
       try {
         store.getState().checkSessionBalanceRequest();
-        const balance = await this.sessionService.getBalance();
+        const address = await this.sessionService.getAddress();
+        const balance = await this.token.balanceOf(address);
 
         store.getState().checkSessionBalanceSuccess(balance);
       } catch (error) {}
@@ -95,18 +101,23 @@ export class CheckoutActions {
   }
 }
 
-export const useCheckout = (
-  config: Config
-): [<T>(selector: checkoutStoreSelector<T>) => T, CheckoutActions] => {
+export const useTokenCheckout = (
+  config: Config,
+  tokenConfig: Config
+): [<T>(selector: checkoutStoreSelector<T>) => T, TokenCheckoutActions] => {
   const { url: rpcUrl, ws_url: wsUrl } = config.node;
-  const { account_factory_address: accountFactoryAddress } = config.erc4337;
+  const {
+    token: { address: tokenAddress },
+    erc4337: { account_factory_address: accountFactoryAddress },
+  } = tokenConfig;
 
   const firstLoadRef = useRef(true);
 
   const configActionsRef = useRef(
-    new CheckoutActions(
+    new TokenCheckoutActions(
       new JsonRpcProvider(rpcUrl),
       wsUrl,
+      tokenAddress,
       accountFactoryAddress
     )
   );
@@ -116,12 +127,13 @@ export const useCheckout = (
       configActionsRef.current.updateProvider(
         new JsonRpcProvider(rpcUrl),
         wsUrl,
+        tokenAddress,
         accountFactoryAddress
       );
     } else {
       firstLoadRef.current = false;
     }
-  }, [rpcUrl, wsUrl, accountFactoryAddress]);
+  }, [rpcUrl, wsUrl, tokenAddress, accountFactoryAddress]);
 
   const useBoundStore = <T>(selector: checkoutStoreSelector<T>) =>
     useStore(configActionsRef.current.store, selector);

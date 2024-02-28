@@ -1,4 +1,4 @@
-import { Contract, JsonRpcSigner, ethers } from "ethers";
+import { BaseWallet, Contract, ethers } from "ethers";
 
 import ERC20Abi from "smartcontracts/build/contracts/erc20/ERC20.abi.json";
 
@@ -10,13 +10,17 @@ export class ERC20Service {
    */
   contractAddress: string;
   contract: Contract;
+  signer: BaseWallet;
 
-  constructor(contractAddress: string, signer: JsonRpcSigner) {
+  constructor(contractAddress: string, signer: BaseWallet) {
     this.contractAddress = contractAddress;
     this.contract = new Contract(contractAddress, ERC20Abi, signer);
+    this.signer = signer;
   }
 
-  balanceOf(address: string): Promise<bigint> {
-    return this.contract.getFunction("balanceOf")(address);
+  balanceOf(address?: string): Promise<bigint> {
+    return this.contract.getFunction("balanceOf")(
+      address ?? this.signer.address
+    );
   }
 }
