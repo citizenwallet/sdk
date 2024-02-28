@@ -3,8 +3,7 @@ import store, { CheckoutStore } from "./state";
 import { useEffect, useRef } from "react";
 import { SessionService } from "../../services/session";
 import { BaseWallet, JsonRpcProvider } from "ethers";
-import { Config, ConfigToken } from "../../services/api/config";
-import { ERC20Service } from "../../services/contracts/ERC20";
+import { Config } from "../../services/api/config";
 
 type checkoutStoreSelector<T> = (state: CheckoutStore) => T;
 

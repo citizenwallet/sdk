@@ -121,8 +121,6 @@ export class SessionService {
     return this.signer.signMessage(message);
   }
 
-  // handling ws provider disconnects/reconnects: https://github.com/ethers-io/ethers.js/issues/1053
-
   listenForBlock(callback: (blockNumber: number) => void) {
     if (this.provider) {
       this.provider.destroy();
