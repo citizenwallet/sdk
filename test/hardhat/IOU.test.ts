@@ -5,7 +5,11 @@ import { expect } from "chai";
 import ERC20Artifact from "smartcontracts/artifacts/contracts/tokens/UpgradeableBurnableCommunityToken.sol/UpgradeableBurnableCommunityToken.json";
 import ERC20IOUArtifact from "smartcontracts/artifacts/contracts/apps/ERC20IOU.sol/ERC20IOU.json";
 
-import { ERC20IOUActions, getLocalIOUHash, getSignedHash } from "../../src";
+import {
+  ERC20IOUContractActions,
+  getLocalIOUHash,
+  getSignedHash,
+} from "../../src";
 import { Contract } from "ethers";
 
 describe("IOU", () => {
@@ -47,7 +51,7 @@ describe("IOU", () => {
 
     await token.mint(owner.address, 100, "hello");
 
-    const erc20IOUActions = new ERC20IOUActions(
+    const erc20IOUActions = new ERC20IOUContractActions(
       await tokeniou.getAddress(),
       friend1
     );
