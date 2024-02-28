@@ -11,6 +11,7 @@ type checkoutStoreSelector<T> = (state: CheckoutStore) => T;
 export class CheckoutActions {
   store: StoreApi<CheckoutStore>;
 
+  provider: JsonRpcProvider;
   sessionService: SessionService;
 
   constructor(
@@ -20,12 +21,15 @@ export class CheckoutActions {
     signer?: BaseWallet | undefined
   ) {
     this.store = store;
+    this.provider = provider;
     this.sessionService = new SessionService(
       provider,
       wsUrl,
       accountFactoryAddress,
       signer
     );
+
+    this.store.getState().setSessionOwner(this.sessionService.getOwner());
   }
 
   updateProvider(
@@ -34,9 +38,13 @@ export class CheckoutActions {
     accountFactoryAddress: string
   ) {
     this.stopListeners();
+    this.provider = provider;
     this.sessionService.updateProvider(provider, wsUrl, accountFactoryAddress);
 
     this.store.getState().reset();
+    this.previousBalance = 0n;
+
+    this.store.getState().setSessionOwner(this.sessionService.getOwner());
   }
 
   getSigner() {
@@ -71,18 +79,57 @@ export class CheckoutActions {
     }
   }
 
+  private previousBalance: bigint = 0n;
+  private isBelowAmountToPay(amount: bigint) {
+    if (amount === 0n || this.store.getState().amountToPay.value === 0n) {
+      // something is wrong or not yet loaded
+      return true;
+    }
+
+    return amount < this.store.getState().amountToPay.value;
+  }
+
+  private async findSessionOwner(balance: bigint, blockNumber: number) {
+    const isBelowAmountToPay = this.isBelowAmountToPay(balance);
+    if (!isBelowAmountToPay && this.isBelowAmountToPay(this.previousBalance)) {
+      // this block is when the balance is went above the amount to pay
+      const block = await this.provider.getBlock(blockNumber, true);
+      if (block) {
+        const txHashes = block.transactions;
+        // Check each transaction in the block
+        for (const txHash of txHashes) {
+          const transaction = block.getPrefetchedTransaction(txHash);
+
+          // If the transaction was sent to the account you're interested in
+          if (transaction.to === this.sessionService.getAddress()) {
+            // Call the callback function
+            this.sessionService.setOwner(transaction.from);
+            store.getState().setSessionOwner(transaction.from);
+            break;
+          }
+        }
+      }
+    }
+
+    this.previousBalance = balance;
+  }
+
   private createBlockHandler(store: StoreApi<CheckoutStore>) {
-    return async () => {
+    return async (blockNumber: number) => {
       try {
         store.getState().checkSessionBalanceRequest();
         const balance = await this.sessionService.getBalance();
 
+        await this.findSessionOwner(balance, blockNumber);
+
         store.getState().checkSessionBalanceSuccess(balance);
-      } catch (error) {}
+      } catch (error) {
+        console.log("error", error);
+      }
     };
   }
 
-  async listenBalance() {
+  async listenToBalance() {
     try {
       this.sessionService.listenForBlock(this.createBlockHandler(this.store));
     } catch (error) {
