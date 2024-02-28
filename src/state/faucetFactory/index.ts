@@ -88,7 +88,7 @@ export class FaucetFactoryContractActions {
     redeemAmount: number,
     redeemInterval: number,
     redeemAdmin: string
-  ) {
+  ): Promise<string | undefined> {
     try {
       this.store.getState().createRequest();
       const tx = await this.faucetFactoryService.createSimpleFaucet(
@@ -103,9 +103,19 @@ export class FaucetFactoryContractActions {
       await tx.wait();
 
       this.store.getState().createSuccess();
+      return this.faucetFactoryService.getSimpleFaucetAddress(
+        owner,
+        salt,
+        tokenAddress,
+        redeemAmount,
+        redeemInterval,
+        redeemAdmin
+      );
     } catch (error) {
       this.store.getState().createFailed();
     }
+
+    return;
   }
 
   async getSimpleFaucetAddress(
