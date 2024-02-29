@@ -9,6 +9,7 @@ import {
 import { createWebSocketProvider } from "../wsprovider";
 import { delay } from "../../utils/delay";
 import { AccountFactoryService } from "../contracts/AccountFactory";
+import { localStorage } from "../storage";
 
 interface RefundRequest {
   fees: bigint;
