@@ -1,9 +1,7 @@
-import { BaseApi } from "../../../src/services/api/api";
 import { BaseConfigApiService, Config } from "../../../src/services/api/config";
 import { delay } from "../../../src/utils/delay";
-import { MockApiService } from "./api";
 
-const mockConfigs: Config[] = [
+const getMockConfigs: () => Config[] = () => [
   {
     community: {
       name: "Community 1",
@@ -94,10 +92,24 @@ const mockConfigs: Config[] = [
   },
 ];
 
-export class MockConfigApi implements BaseApi {
+export class MockConfigApiService implements BaseConfigApiService {
   async get(): Promise<Config[]> {
     await delay(100);
 
-    return mockConfigs;
+    return getMockConfigs();
+  }
+
+  async getBySlug(slug: string): Promise<Config> {
+    await delay(100);
+
+    const config = getMockConfigs().find(
+      (config) => config.community.alias === slug
+    );
+
+    if (!config) {
+      throw new Error("Config not found");
+    }
+
+    return config;
   }
 }

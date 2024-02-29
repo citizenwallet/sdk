@@ -125,7 +125,7 @@ export class SessionService {
     if (!this.signer.provider) {
       throw new Error("Provider not set");
     }
-    console.log("balance for", this.signer.address);
+
     return this.signer.provider.getBalance(this.signer.address);
   }
 
