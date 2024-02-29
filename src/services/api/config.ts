@@ -77,7 +77,6 @@ export class ConfigApiService implements BaseConfigApiService {
   }
 
   async getBySlug(slug: string): Promise<Config> {
-    console.log("getting by slug", slug);
     const url = `/v3/${slug}.json?cacheBuster=` + randomCacheNumber();
 
     return this.api.get(url);
