@@ -78,6 +78,27 @@ export class CheckoutActions {
     }
   }
 
+  async refund() {
+    try {
+      this.store.getState().refundRequest();
+      const { fees, amount, transaction } = await this.sessionService.refund();
+
+      this.store.getState().refundRequested(fees, amount);
+
+      const txResponse = await transaction;
+
+      await txResponse.wait();
+
+      this.store.getState().refundSuccess();
+
+      return true;
+    } catch (error) {
+      this.store.getState().refundFailed();
+    }
+
+    return false;
+  }
+
   private previousBalance: bigint = 0n;
   private isBelowAmountToPay(amount: bigint) {
     if (amount === 0n || this.store.getState().amountToPay.value === 0n) {

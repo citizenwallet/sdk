@@ -4,10 +4,17 @@ import {
   TransactionResponse,
   Wallet,
   WebSocketProvider,
+  parseUnits,
 } from "ethers";
 import { createWebSocketProvider } from "../wsprovider";
 import { delay } from "../../utils/delay";
 import { AccountFactoryService } from "../contracts/AccountFactory";
+
+interface RefundRequest {
+  fees: bigint;
+  amount: bigint;
+  transaction: Promise<TransactionResponse>;
+}
 
 export class SessionService {
   signer: BaseWallet;
@@ -147,6 +154,55 @@ export class SessionService {
       to,
       value: amount,
     });
+  }
+
+  async refund(): Promise<RefundRequest> {
+    if (!this.owner) {
+      throw new Error("Owner not set");
+    }
+
+    if (!this.signer.provider) {
+      throw new Error("Provider not set");
+    }
+
+    // Get the base fee per gas for the next block
+    const nextBlock = await this.signer.provider.getBlock("latest");
+    if (!nextBlock || !nextBlock.baseFeePerGas) {
+      throw new Error("Next block not found");
+    }
+
+    const baseFeePerGas = nextBlock.baseFeePerGas;
+
+    // Set your max priority fee per gas
+    const maxPriorityFeePerGas = parseUnits("2.0", "gwei");
+
+    // Calculate the max fee per gas
+    const maxFeePerGas = baseFeePerGas + maxPriorityFeePerGas;
+
+    // Estimate the gas cost for the transaction
+    const gasLimit = 21000n; // for a simple Ether transfer
+    const gasCost = maxFeePerGas * gasLimit;
+
+    // Get the account balance
+    const balance = await this.signer.provider.getBalance(this.signer.address);
+
+    // Calculate the amount to send
+    const amount = balance - gasCost;
+
+    if (amount <= 0n) {
+      throw new Error("Insufficient funds");
+    }
+
+    return {
+      fees: gasCost,
+      amount,
+      transaction: this.signer.sendTransaction({
+        to: this.owner,
+        value: amount,
+        gasLimit: gasLimit,
+        gasPrice: maxFeePerGas,
+      }),
+    };
   }
 
   reset() {

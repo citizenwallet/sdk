@@ -27,6 +27,16 @@ export type CheckoutStore = {
   checkAmountFailed: () => void;
   sessionOwner?: string;
   setSessionOwner: (address?: string) => void;
+  refund: {
+    fees: bigint;
+    amount: bigint;
+    loading: boolean;
+    error: boolean;
+  };
+  refundRequest: () => void;
+  refundRequested: (fees: bigint, amount: bigint) => void;
+  refundSuccess: () => void;
+  refundFailed: () => void;
   reset: () => void;
 };
 
@@ -47,6 +57,12 @@ const getInitialState = () => ({
     error: false,
   },
   sessionOwner: undefined,
+  refund: {
+    fees: 0n,
+    amount: 0n,
+    loading: false,
+    error: false,
+  },
 });
 
 export default createStore<CheckoutStore>((set) => ({
@@ -88,5 +104,21 @@ export default createStore<CheckoutStore>((set) => ({
       amountToPay: { ...state.amountToPay, loading: false, error: true },
     })),
   setSessionOwner: (address?: string) => set({ sessionOwner: address }),
+  refundRequest: () =>
+    set({
+      refund: { fees: 0n, amount: 0n, loading: true, error: false },
+    }),
+  refundRequested: (fees: bigint, amount: bigint) =>
+    set({
+      refund: { fees, amount, loading: true, error: false },
+    }),
+  refundSuccess: () =>
+    set((state) => ({
+      refund: { ...state.refund, loading: false, error: false },
+    })),
+  refundFailed: () =>
+    set((state) => ({
+      refund: { ...state.refund, loading: false, error: true },
+    })),
   reset: () => set(getInitialState()),
 }));
