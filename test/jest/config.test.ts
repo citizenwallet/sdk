@@ -1,14 +1,16 @@
 import { ConfigService } from "../../src/services/config";
 import { ConfigActions } from "../../src/state/config";
-import { MockApiService } from "./mock/api";
+import { MockApiService } from "./mock";
 
 describe("Config", () => {
   let configService: ConfigService;
   let configActions: ConfigActions;
 
   beforeEach(() => {
-    configService = new ConfigService(new MockApiService());
-    configActions = new ConfigActions(new MockApiService());
+    const mockApi = new MockApiService();
+
+    configService = new ConfigService(mockApi);
+    configActions = new ConfigActions(mockApi);
 
     const state = configActions.store.getState();
 

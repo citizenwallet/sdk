@@ -9,32 +9,39 @@ export class ConfigService {
 
   api: BaseConfigApiService;
 
-  config?: Config[];
+  configs?: Config[];
+
+  config?: Config;
 
   async setConfig() {
-    this.config = await this.api.get();
+    this.configs = await this.api.get();
+  }
+
+  async setConfigBySlug(slug: string) {
+    this.config = await this.api.getBySlug(slug);
   }
 
   async get(): Promise<Config[]> {
-    if (!this.config) {
-      this.config = await this.api.get();
+    if (!this.configs) {
+      this.configs = await this.api.get();
 
-      return this.config!;
+      return this.configs!;
     }
 
     this.setConfig();
 
-    return this.config!;
+    return this.configs!;
   }
 
   async getBySlug(slug: string): Promise<Config> {
-    const configs = await this.get();
+    if (!this.config) {
+      this.config = await this.api.getBySlug(slug);
 
-    const config = configs.find((c) => c.community.alias === slug);
-    if (!config) {
-      throw new Error("Config not found");
+      return this.config!;
     }
 
-    return config;
+    this.setConfigBySlug(slug);
+
+    return this.config!;
   }
 }

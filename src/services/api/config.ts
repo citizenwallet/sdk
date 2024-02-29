@@ -60,6 +60,7 @@ export interface Config {
 
 export abstract class BaseConfigApiService {
   abstract get(): Promise<Config[]>;
+  abstract getBySlug(slug: string): Promise<Config>;
 }
 
 export class ConfigApiService implements BaseConfigApiService {
@@ -71,6 +72,13 @@ export class ConfigApiService implements BaseConfigApiService {
 
   async get(): Promise<Config[]> {
     const url = "/v3/communities.json?cacheBuster=" + randomCacheNumber();
+
+    return this.api.get(url);
+  }
+
+  async getBySlug(slug: string): Promise<Config> {
+    console.log("getting by slug", slug);
+    const url = `/v3/${slug}.json?cacheBuster=` + randomCacheNumber();
 
     return this.api.get(url);
   }
