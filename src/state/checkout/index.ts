@@ -99,6 +99,13 @@ export class CheckoutActions {
     return false;
   }
 
+  async reset() {
+    this.sessionService.reset();
+    this.store.getState().reset();
+
+    await this.onLoad();
+  }
+
   private previousBalance: bigint = 0n;
   private isBelowAmountToPay(amount: bigint) {
     if (amount === 0n || this.store.getState().amountToPay.value === 0n) {
@@ -121,7 +128,10 @@ export class CheckoutActions {
           const transaction = block.getPrefetchedTransaction(txHash);
 
           // If the transaction was sent to the account you're interested in
-          if (transaction.to === this.sessionService.getAddress()) {
+          if (
+            transaction.to === this.sessionService.getAddress() &&
+            (transaction.data === "0x" || !transaction.data)
+          ) {
             // Call the callback function
             this.sessionService.setOwner(transaction.from);
             store.getState().setSessionOwner(transaction.from);
