@@ -1,6 +1,6 @@
 import { StoreApi, useStore } from "zustand";
 import store, { ContractStore } from "./state";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Config } from "../../services/api/config";
 import { GenericContractService } from "../../services/contracts/generic";
 import { JsonRpcProvider } from "ethers";
@@ -40,7 +40,18 @@ export class ContractActions {
 export const useContract = (
   config: Config
 ): [<T>(selector: contractStoreSelector<T>) => T, ContractActions] => {
-  const contractActionsRef = useRef(new ContractActions(config.node.url));
+  const firstLoadRef = useRef(true);
+  const { url } = config.node;
+
+  const contractActionsRef = useRef(new ContractActions(url));
+
+  useEffect(() => {
+    if (!firstLoadRef.current) {
+      contractActionsRef.current.updateRpcUrl(url);
+    } else {
+      firstLoadRef.current = false;
+    }
+  }, [url]);
 
   const useBoundStore = <T>(selector: contractStoreSelector<T>) =>
     useStore(contractActionsRef.current.store, selector);
