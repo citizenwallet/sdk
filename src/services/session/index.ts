@@ -32,7 +32,6 @@ export class SessionService {
     accountFactoryAddress: string,
     signer?: BaseWallet
   ) {
-    console.log("constructing session service...");
     this.wsUrl = wsUrl;
     this.rpcProvider = provider;
 
