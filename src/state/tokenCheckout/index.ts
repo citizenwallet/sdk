@@ -44,10 +44,6 @@ export class TokenCheckoutActions {
     this.store.getState().reset();
   }
 
-  getSigner() {
-    return this.sessionService.signer;
-  }
-
   async onLoad() {
     try {
       this.store.getState().checkSessionAddressRequest();

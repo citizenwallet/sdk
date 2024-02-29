@@ -46,16 +46,12 @@ export class CheckoutActions {
     this.store.getState().setSessionOwner(this.sessionService.getOwner());
   }
 
-  getSigner() {
-    return this.sessionService.signer;
-  }
-
   async onLoad() {
     try {
       this.store.getState().checkSessionAddressRequest();
       this.store.getState().checkSessionBalanceRequest();
 
-      const address = await this.sessionService.getAddress();
+      const address = this.sessionService.getAddress();
       const balance = await this.sessionService.getBalance();
 
       this.store.getState().checkSessionAddressSuccess(address);
@@ -66,11 +62,15 @@ export class CheckoutActions {
     }
   }
 
-  async updateAmountToPay(evaluateAmount: () => Promise<bigint>) {
+  getSessionService() {
+    return this.sessionService;
+  }
+
+  async updateAmountToPay(evaluateAmount: () => Promise<bigint | undefined>) {
     try {
       this.store.getState().checkAmountRequest();
 
-      const amount = await evaluateAmount();
+      const amount = (await evaluateAmount()) || 0n;
 
       this.store.getState().checkAmountSuccess(amount);
     } catch (error) {
@@ -102,6 +102,8 @@ export class CheckoutActions {
   async reset() {
     this.sessionService.reset();
     this.store.getState().reset();
+
+    this.store.getState().setSessionOwner(this.sessionService.getOwner());
 
     await this.onLoad();
   }

@@ -1,3 +1,4 @@
+import { BaseWallet } from "ethers";
 import { createStore } from "zustand/vanilla";
 
 export type CheckoutStore = {
