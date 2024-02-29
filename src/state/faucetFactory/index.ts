@@ -1,59 +1,45 @@
 import { StoreApi, useStore } from "zustand";
 import store, { FaucetFactoryStore } from "./state";
 import { useEffect, useRef } from "react";
-import { SessionService } from "../../services/session";
-import { BaseWallet, JsonRpcProvider } from "ethers";
+import { JsonRpcProvider } from "ethers";
 import { Config } from "../../services/api/config";
 import { FaucetFactoryContractService } from "../../services/contracts/FaucetFactory";
 import { FaucetFactories } from "../../config";
+import { SessionService } from "../../services/session";
 
 type faucetFactoryStoreSelector<T> = (state: FaucetFactoryStore) => T;
 
 export class FaucetFactoryContractActions {
   store: StoreApi<FaucetFactoryStore>;
 
-  sessionService: SessionService;
   faucetFactoryService: FaucetFactoryContractService;
 
   constructor(
     provider: JsonRpcProvider,
-    wsUrl: string,
-    accountFactoryAddress: string,
     chainId: string,
-    signer?: BaseWallet | undefined
+    sessionService: SessionService
   ) {
     this.store = store;
-    this.sessionService = new SessionService(
-      provider,
-      wsUrl,
-      accountFactoryAddress,
-      signer
-    );
+
     this.faucetFactoryService = new FaucetFactoryContractService(
       FaucetFactories[chainId],
       provider,
-      this.sessionService.signer
+      sessionService
     );
   }
 
   updateProvider(
     provider: JsonRpcProvider,
-    wsUrl: string,
-    accountFactoryAddress: string,
-    chainId: string
+    chainId: string,
+    sessionService: SessionService
   ) {
-    this.sessionService.updateProvider(provider, wsUrl, accountFactoryAddress);
     this.faucetFactoryService = new FaucetFactoryContractService(
       FaucetFactories[chainId],
       provider,
-      this.sessionService.signer
+      sessionService
     );
 
     this.store.getState().reset();
-  }
-
-  getSigner() {
-    return this.sessionService.signer;
   }
 
   async estimateAmountToPay(
@@ -145,22 +131,21 @@ export class FaucetFactoryContractActions {
 }
 
 export const useFaucetFactoryContract = (
-  config: Config
+  config: Config,
+  sessionService: SessionService
 ): [
   <T>(selector: faucetFactoryStoreSelector<T>) => T,
   FaucetFactoryContractActions
 ] => {
-  const { url: rpcUrl, ws_url: wsUrl } = config.node;
-  const { account_factory_address: accountFactoryAddress } = config.erc4337;
+  const { url: rpcUrl, chainId } = config.node;
 
   const firstLoadRef = useRef(true);
 
   const configActionsRef = useRef(
     new FaucetFactoryContractActions(
       new JsonRpcProvider(rpcUrl),
-      wsUrl,
-      accountFactoryAddress,
-      config.node.chainId.toString(10)
+      chainId.toString(10),
+      sessionService
     )
   );
 
@@ -168,14 +153,13 @@ export const useFaucetFactoryContract = (
     if (!firstLoadRef.current) {
       configActionsRef.current.updateProvider(
         new JsonRpcProvider(rpcUrl),
-        wsUrl,
-        accountFactoryAddress,
-        config.node.chainId.toString(10)
+        chainId.toString(10),
+        sessionService
       );
     } else {
       firstLoadRef.current = false;
     }
-  }, [rpcUrl, wsUrl, accountFactoryAddress]);
+  }, [rpcUrl, chainId, sessionService]);
 
   const useBoundStore = <T>(selector: faucetFactoryStoreSelector<T>) =>
     useStore(configActionsRef.current.store, selector);

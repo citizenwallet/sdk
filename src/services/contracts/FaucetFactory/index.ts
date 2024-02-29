@@ -8,6 +8,7 @@ import {
 } from "ethers";
 
 import FaucetFactoryAbi from "smartcontracts/build/contracts/faucetFactory/FaucetFactory.abi.json";
+import { SessionService } from "../../session";
 
 export const faucetFactory = new ethers.Interface(FaucetFactoryAbi);
 
@@ -17,18 +18,17 @@ export class FaucetFactoryContractService {
    */
   contractAddress: string;
   provider: WebSocketProvider | JsonRpcProvider;
-  signer: BaseWallet;
-  contract: Contract;
+  sessionService: SessionService;
+  // contract: Contract;
 
   constructor(
     contractAddress: string,
     provider: WebSocketProvider | JsonRpcProvider,
-    signer: BaseWallet
+    sessionService: SessionService
   ) {
     this.contractAddress = contractAddress;
     this.provider = provider;
-    this.signer = signer;
-    this.contract = new Contract(contractAddress, FaucetFactoryAbi, signer);
+    this.sessionService = sessionService;
   }
 
   async estimateCreateSimpleFaucetWithDefaults(
@@ -39,7 +39,13 @@ export class FaucetFactoryContractService {
   ): Promise<bigint> {
     const wallet = ethers.Wallet.createRandom();
 
-    const gas = await this.contract
+    const contract = new Contract(
+      this.contractAddress,
+      FaucetFactoryAbi,
+      this.sessionService.signer
+    );
+
+    const gas = await contract
       .getFunction("createSimpleFaucet")
       .estimateGas(
         wallet.address,
@@ -65,7 +71,13 @@ export class FaucetFactoryContractService {
     redeemInterval: number,
     redeemAdmin: string
   ): Promise<bigint> {
-    const gas = await this.contract
+    const contract = new Contract(
+      this.contractAddress,
+      FaucetFactoryAbi,
+      this.sessionService.signer
+    );
+
+    const gas = await contract
       .getFunction("createSimpleFaucet")
       .estimateGas(
         owner,
@@ -91,7 +103,12 @@ export class FaucetFactoryContractService {
     redeemInterval: number,
     redeemAdmin: string
   ): Promise<TransactionResponse> {
-    return this.contract.getFunction("createSimpleFaucet")(
+    const contract = new Contract(
+      this.contractAddress,
+      FaucetFactoryAbi,
+      this.sessionService.signer
+    );
+    return contract.getFunction("createSimpleFaucet")(
       owner,
       salt,
       tokenAddress,
@@ -109,7 +126,12 @@ export class FaucetFactoryContractService {
     redeemInterval: number,
     redeemAdmin: string
   ): Promise<string> {
-    return this.contract.getFunction("getSimpleFaucetAddress")(
+    const contract = new Contract(
+      this.contractAddress,
+      FaucetFactoryAbi,
+      this.sessionService.signer
+    );
+    return contract.getFunction("getSimpleFaucetAddress")(
       owner,
       salt,
       tokenAddress,

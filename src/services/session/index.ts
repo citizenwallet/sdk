@@ -32,6 +32,7 @@ export class SessionService {
     accountFactoryAddress: string,
     signer?: BaseWallet
   ) {
+    console.log("constructing session service...");
     this.wsUrl = wsUrl;
     this.rpcProvider = provider;
 
@@ -84,6 +85,10 @@ export class SessionService {
     this.getOwner();
   }
 
+  getSigner() {
+    return this.signer;
+  }
+
   setOwner(owner: string) {
     this.owner = owner;
     localStorage.setItem("cw-session-owner", owner);
@@ -121,6 +126,7 @@ export class SessionService {
     if (!this.signer.provider) {
       throw new Error("Provider not set");
     }
+    console.log("balance for", this.signer.address);
     return this.signer.provider.getBalance(this.signer.address);
   }
 
