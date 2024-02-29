@@ -1,4 +1,4 @@
-import { Api, BaseApi } from "./api";
+import { BaseApi } from "./api";
 import { randomCacheNumber } from "./utils";
 
 export interface ConfigToken {
