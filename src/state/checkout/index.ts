@@ -2,7 +2,7 @@ import { StoreApi, useStore } from "zustand";
 import store, { CheckoutStore } from "./state";
 import { useEffect, useRef } from "react";
 import { SessionService } from "../../services/session";
-import { BaseWallet, JsonRpcProvider } from "ethers";
+import { BaseWallet, JsonRpcProvider, getAddress } from "ethers";
 import { Config } from "../../services/api/config";
 
 type checkoutStoreSelector<T> = (state: CheckoutStore) => T;
@@ -108,6 +108,24 @@ export class CheckoutActions {
     await this.onLoad();
   }
 
+  setSessionOwner(address: string): boolean {
+    // parse the address to make sure it's valid
+    try {
+      const parsedAddress = getAddress(address);
+
+      this.sessionService.setOwner(parsedAddress);
+      this.store.getState().setSessionOwner(parsedAddress);
+      this.store.getState().setSessionOwnerError(false);
+
+      return true;
+    } catch (error) {
+      this.store.getState().setSessionOwnerError(true);
+    }
+
+    return false;
+  }
+
+  private isListening = false;
   private previousBalance: bigint = 0n;
   private isBelowAmountToPay(amount: bigint) {
     if (amount === 0n || this.store.getState().amountToPay.value === 0n) {
@@ -120,8 +138,12 @@ export class CheckoutActions {
 
   private async findSessionOwner(balance: bigint, blockNumber: number) {
     const isBelowAmountToPay = this.isBelowAmountToPay(balance);
-    if (!isBelowAmountToPay && this.isBelowAmountToPay(this.previousBalance)) {
-      // this block is when the balance is went above the amount to pay
+    if (
+      !isBelowAmountToPay &&
+      this.isBelowAmountToPay(this.previousBalance) &&
+      this.sessionService.getOwner() === undefined
+    ) {
+      // the balance of the session has just increased and is now above the amount to pay
       const block = await this.provider.getBlock(blockNumber, true);
       if (block) {
         const txHashes = block.transactions;
@@ -155,22 +177,29 @@ export class CheckoutActions {
         await this.findSessionOwner(balance, blockNumber);
 
         store.getState().checkSessionBalanceSuccess(balance);
-      } catch (error) {
-        console.log("error", error);
-      }
+      } catch (error) {}
     };
   }
 
   async listenToBalance() {
     try {
+      if (this.isListening) {
+        return;
+      }
+
+      this.isListening = true;
       this.sessionService.listenForBlock(this.createBlockHandler(this.store));
     } catch (error) {
       this.store.getState().checkSessionBalanceFailed();
+      this.isListening = false;
     }
   }
 
   async stopListeners() {
-    return this.sessionService.stopListeningForBlocks();
+    if (this.isListening) {
+      this.isListening = false;
+      return this.sessionService.stopListeningForBlocks();
+    }
   }
 }
 
@@ -180,8 +209,6 @@ export const useCheckout = (
   const { url: rpcUrl, ws_url: wsUrl } = config.node;
   const { account_factory_address: accountFactoryAddress } = config.erc4337;
 
-  const firstLoadRef = useRef(true);
-
   const configActionsRef = useRef(
     new CheckoutActions(
       new JsonRpcProvider(rpcUrl),
@@ -189,18 +216,6 @@ export const useCheckout = (
       accountFactoryAddress
     )
   );
-
-  useEffect(() => {
-    if (!firstLoadRef.current) {
-      configActionsRef.current.updateProvider(
-        new JsonRpcProvider(rpcUrl),
-        wsUrl,
-        accountFactoryAddress
-      );
-    } else {
-      firstLoadRef.current = false;
-    }
-  }, [rpcUrl, wsUrl, accountFactoryAddress]);
 
   const useBoundStore = <T>(selector: checkoutStoreSelector<T>) =>
     useStore(configActionsRef.current.store, selector);

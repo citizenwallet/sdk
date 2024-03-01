@@ -149,8 +149,6 @@ export class SessionService {
     if (this.provider) {
       await this.provider.removeAllListeners("block");
 
-      await delay(250);
-
       this.provider.destroy();
     }
   }
