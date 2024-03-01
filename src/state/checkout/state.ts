@@ -1,4 +1,3 @@
-import { BaseWallet } from "ethers";
 import { createStore } from "zustand/vanilla";
 
 export type CheckoutStore = {
@@ -27,7 +26,9 @@ export type CheckoutStore = {
   checkAmountSuccess: (amountToPay: bigint) => void;
   checkAmountFailed: () => void;
   sessionOwner?: string;
+  sessionOwnerError: boolean;
   setSessionOwner: (address?: string) => void;
+  setSessionOwnerError: (error: boolean) => void;
   refund: {
     fees: bigint;
     amount: bigint;
@@ -58,6 +59,7 @@ const getInitialState = () => ({
     error: false,
   },
   sessionOwner: undefined,
+  sessionOwnerError: false,
   refund: {
     fees: 0n,
     amount: 0n,
@@ -105,6 +107,7 @@ export default createStore<CheckoutStore>((set) => ({
       amountToPay: { ...state.amountToPay, loading: false, error: true },
     })),
   setSessionOwner: (address?: string) => set({ sessionOwner: address }),
+  setSessionOwnerError: (error) => set({ sessionOwnerError: error }),
   refundRequest: () =>
     set({
       refund: { fees: 0n, amount: 0n, loading: true, error: false },
