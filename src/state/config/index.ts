@@ -2,7 +2,7 @@ import { StoreApi, useStore } from "zustand";
 import store, { ConfigStore } from "./state";
 import { ConfigService } from "../../services/config";
 import { ApiService } from "../../services/api";
-import { useRef } from "react";
+import { useMemo } from "react";
 
 type configStoreSelector<T> = (state: ConfigStore) => T;
 
@@ -44,12 +44,13 @@ export class ConfigActions {
 export const useConfig = (
   baseUrl?: string
 ): [<T>(selector: configStoreSelector<T>) => T, ConfigActions] => {
-  const configActionsRef = useRef(
-    new ConfigActions(baseUrl ? new ApiService(baseUrl) : undefined)
+  const configActions = useMemo(
+    () => new ConfigActions(baseUrl ? new ApiService(baseUrl) : undefined),
+    [baseUrl]
   );
 
   const useBoundStore = <T>(selector: configStoreSelector<T>) =>
-    useStore(configActionsRef.current.store, selector);
+    useStore(configActions.store, selector);
 
-  return [useBoundStore, configActionsRef.current];
+  return [useBoundStore, configActions];
 };
