@@ -137,7 +137,7 @@ export const useFaucetFactoryContract = (
   <T>(selector: faucetFactoryStoreSelector<T>) => T,
   FaucetFactoryContractActions
 ] => {
-  const { url: rpcUrl, chainId } = config.node;
+  const { url: rpcUrl, chain_id: chainId } = config.node;
 
   const firstLoadRef = useRef(true);
 
