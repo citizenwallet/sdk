@@ -1,6 +1,6 @@
 import { StoreApi, useStore } from "zustand";
 import store, { CheckoutStore } from "./state";
-import { useRef } from "react";
+import { useMemo } from "react";
 import { SessionService } from "../../services/session";
 import { BaseWallet, JsonRpcProvider, getAddress } from "ethers";
 import { Config } from "../../services/api/config";
@@ -211,16 +211,18 @@ export const useCheckout = (
   const { url: rpcUrl, ws_url: wsUrl } = config.node;
   const { account_factory_address: accountFactoryAddress } = config.erc4337;
 
-  const configActionsRef = useRef(
-    new CheckoutActions(
-      new JsonRpcProvider(rpcUrl),
-      wsUrl,
-      accountFactoryAddress
-    )
+  const configActions = useMemo(
+    () =>
+      new CheckoutActions(
+        new JsonRpcProvider(rpcUrl),
+        wsUrl,
+        accountFactoryAddress
+      ),
+    [rpcUrl, wsUrl, accountFactoryAddress]
   );
 
   const useBoundStore = <T>(selector: checkoutStoreSelector<T>) =>
-    useStore(configActionsRef.current.store, selector);
+    useStore(configActions.store, selector);
 
-  return [useBoundStore, configActionsRef.current];
+  return [useBoundStore, configActions];
 };

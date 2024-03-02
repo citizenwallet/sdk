@@ -1,6 +1,6 @@
 import { StoreApi, useStore } from "zustand";
 import store, { FaucetFactoryStore } from "./state";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { JsonRpcProvider } from "ethers";
 import { Config } from "../../services/api/config";
 import { FaucetFactoryContractService } from "../../services/contracts/FaucetFactory";
@@ -141,17 +141,19 @@ export const useFaucetFactoryContract = (
 
   const firstLoadRef = useRef(true);
 
-  const configActionsRef = useRef(
-    new FaucetFactoryContractActions(
-      new JsonRpcProvider(rpcUrl),
-      chainId.toString(10),
-      sessionService
-    )
+  const configActions = useMemo(
+    () =>
+      new FaucetFactoryContractActions(
+        new JsonRpcProvider(rpcUrl),
+        chainId.toString(10),
+        sessionService
+      ),
+    [rpcUrl, chainId, sessionService]
   );
 
   useEffect(() => {
     if (!firstLoadRef.current) {
-      configActionsRef.current.updateProvider(
+      configActions.updateProvider(
         new JsonRpcProvider(rpcUrl),
         chainId.toString(10),
         sessionService
@@ -159,10 +161,10 @@ export const useFaucetFactoryContract = (
     } else {
       firstLoadRef.current = false;
     }
-  }, [rpcUrl, chainId, sessionService]);
+  }, [configActions, rpcUrl, chainId, sessionService]);
 
   const useBoundStore = <T>(selector: faucetFactoryStoreSelector<T>) =>
-    useStore(configActionsRef.current.store, selector);
+    useStore(configActions.store, selector);
 
-  return [useBoundStore, configActionsRef.current];
+  return [useBoundStore, configActions];
 };
