@@ -1,6 +1,6 @@
 import { StoreApi, useStore } from "zustand";
 import store, { CheckoutStore } from "./state";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { SessionService } from "../../services/session";
 import { BaseWallet, JsonRpcProvider, getAddress } from "ethers";
 import { Config } from "../../services/api/config";
@@ -66,11 +66,13 @@ export class CheckoutActions {
     return this.sessionService;
   }
 
-  async updateAmountToPay(evaluateAmount: () => Promise<bigint | undefined>) {
+  async updateAmountToPay(
+    evaluateAmount: (signer: BaseWallet) => Promise<bigint | undefined>
+  ) {
     try {
       this.store.getState().checkAmountRequest();
 
-      const amount = (await evaluateAmount()) || 0n;
+      const amount = (await evaluateAmount(this.sessionService.signer)) || 0n;
 
       this.store.getState().checkAmountSuccess(amount);
     } catch (error) {
