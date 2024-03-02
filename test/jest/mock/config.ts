@@ -23,7 +23,7 @@ const getMockConfigs: () => Config[] = () => [
       url: "https://ipfs1.com",
     },
     node: {
-      chainId: 1,
+      chain_id: 1,
       url: "https://node1.com",
       ws_url: "wss://node1.com",
     },
@@ -67,7 +67,7 @@ const getMockConfigs: () => Config[] = () => [
       url: "https://ipfs2.com",
     },
     node: {
-      chainId: 2,
+      chain_id: 2,
       url: "https://node2.com",
       ws_url: "wss://node2.com",
     },
