@@ -9,6 +9,12 @@ export interface ConfigToken {
   decimals: number;
 }
 
+export interface ConfigIndexer {
+  url: string;
+  ipfs_url: string;
+  key: string;
+}
+
 export interface Config {
   community: {
     name: string;
@@ -23,11 +29,7 @@ export interface Config {
     url: string;
     name: string;
   };
-  indexer: {
-    url: string;
-    ipfs_url: string;
-    key: string;
-  };
+  indexer: ConfigIndexer;
   ipfs: {
     url: string;
   };

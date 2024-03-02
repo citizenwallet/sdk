@@ -1,6 +1,14 @@
 // General Services
 export { ApiService } from "./services/api";
 
+// Indexer
+export {
+  IndexerService,
+  Transfer,
+  TransferData,
+  TransferStatus,
+} from "./services/indexer";
+
 // Contract
 export { ContractActions, useContract } from "./state/contract";
 export { GenericContractService } from "./services/contracts/generic";
@@ -27,12 +35,15 @@ export { SimpleFaucetContractService } from "./services/contracts/SimpleFaucet";
 // Config
 export { ConfigActions, useConfig } from "./state/config";
 export { ConfigService } from "./services/config";
-export { Config } from "./services/api/config";
+export { Config, ConfigToken, ConfigIndexer } from "./services/api/config";
 
 // Checkout
 export { CheckoutActions, useCheckout } from "./state/checkout";
 export { SessionService } from "./services/session";
 
 // Token Checkout
-export { TokenCheckoutActions, useTokenCheckout } from "./state/tokenCheckout";
-export { ERC20Service } from "./services/contracts/ERC20";
+// export { TokenCheckoutActions, useTokenCheckout } from "./state/tokenCheckout";
+
+// ERC20
+export { ERC20Actions, useERC20 } from "./state/erc20";
+export { ERC20ContractService } from "./services/contracts/ERC20";

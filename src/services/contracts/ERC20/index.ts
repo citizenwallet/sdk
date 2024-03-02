@@ -1,26 +1,31 @@
-import { BaseWallet, Contract, ethers } from "ethers";
+import { Contract, JsonRpcProvider, ethers } from "ethers";
 
 import ERC20Abi from "smartcontracts/build/contracts/erc20/ERC20.abi.json";
 
 export const faucetFactory = new ethers.Interface(ERC20Abi);
 
-export class ERC20Service {
+export class ERC20ContractService {
   /**
    * The contract instance.
    */
+  wsUrl: string;
   contractAddress: string;
   contract: Contract;
-  signer: BaseWallet;
 
-  constructor(contractAddress: string, signer: BaseWallet) {
+  constructor(
+    contractAddress: string,
+    wsUrl: string,
+    provider: JsonRpcProvider
+  ) {
     this.contractAddress = contractAddress;
-    this.contract = new Contract(contractAddress, ERC20Abi, signer);
-    this.signer = signer;
+    this.wsUrl = wsUrl;
+    this.contract = new Contract(contractAddress, ERC20Abi, provider);
   }
 
-  balanceOf(address?: string): Promise<bigint> {
+  balanceOf(address: string): Promise<bigint> {
     return this.contract.getFunction("balanceOf")(
-      address ?? this.signer.address
+      // address ?? this.signer.address
+      address
     );
   }
 }

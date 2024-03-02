@@ -1,0 +1,71 @@
+import { ConfigIndexer } from "../api/config";
+
+export type TransferStatus = "sending" | "pending" | "success" | "fail";
+
+export interface TransferData {
+  description: string;
+}
+
+export interface Transfer {
+  hash: string;
+  tx_hash: string;
+  token_id: number;
+  created_at: Date;
+  from: string;
+  to: string;
+  nonce: number;
+  value: number;
+  data: TransferData | null;
+  status: TransferStatus;
+}
+
+export interface IndexerResponsePaginationMetadata {
+  limit: number;
+  offset: number;
+  total: number;
+}
+
+export interface ArrayResponse<T, M> {
+  array: T[];
+  meta: M;
+}
+
+export interface PaginationParams {
+  limit: number;
+  offset: number;
+}
+
+export interface TransferQueryParams {
+  maxDate: string;
+}
+
+export class IndexerService {
+  private url: string;
+  private key: string;
+
+  constructor(config: ConfigIndexer) {
+    this.url = config.url;
+    this.key = config.key;
+  }
+
+  async getAllTransfers(
+    tokenAddress: string,
+    accountAddress: string,
+    params?: PaginationParams & TransferQueryParams
+  ): Promise<ArrayResponse<Transfer, IndexerResponsePaginationMetadata>> {
+    let url = `${this.url}/logs/v2/transfers/${tokenAddress}/${accountAddress}`;
+
+    if (params) {
+      url += `?limit=${params.limit}&offset=${params.offset}`;
+
+      if (params.maxDate) {
+        url += `&maxDate=${params.maxDate}`;
+      }
+    }
+
+    const resp = await fetch(url, {
+      headers: { Authorization: `Bearer ${this.key}` },
+    });
+    return resp.json();
+  }
+}
