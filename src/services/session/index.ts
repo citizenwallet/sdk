@@ -135,9 +135,7 @@ export class SessionService {
   }
 
   listenForBlock(callback: (blockNumber: number) => void) {
-    if (this.provider) {
-      this.provider.destroy();
-    }
+    this.safeDestroyProvider();
 
     this.provider = createWebSocketProvider(this.wsUrl);
     this.provider.on("block", (blockNumber: number) => {
@@ -146,11 +144,13 @@ export class SessionService {
   }
 
   async stopListeningForBlocks() {
-    if (this.provider) {
-      await this.provider.removeAllListeners("block");
+    this.safeDestroyProvider();
+  }
 
-      this.provider.destroy();
-    }
+  private safeDestroyProvider() {
+    try {
+      this.provider?.destroy();
+    } catch (error) {}
   }
 
   withdraw(to: string, amount: bigint): Promise<TransactionResponse> {
