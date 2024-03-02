@@ -8,6 +8,8 @@ import {
   IndexerResponsePaginationMetadata,
   IndexerService,
 } from "../../services/indexer";
+import { isRefScrollable } from "../../utils/scroll";
+import { delay } from "../../utils/delay";
 
 type erc20StoreSelector<T> = (state: ERC20Store) => T;
 
@@ -47,14 +49,20 @@ export class ERC20Actions {
   private fetchLimit = 10;
   private transfersPagination?: IndexerResponsePaginationMetadata;
   private previousFetchLength = 0;
-  async getTransfers(address: string) {
+  async getTransfers(address: string, reset = false): Promise<boolean> {
     try {
+      if (reset) {
+        this.fetchMaxDate = new Date();
+        this.transfersPagination = undefined;
+        this.previousFetchLength = 0;
+      }
+
       if (
         this.transfersPagination &&
         this.previousFetchLength < this.fetchLimit
       ) {
         // nothing more to fetch
-        return;
+        return false;
       }
 
       this.store.getState().transfersRequest();
@@ -76,10 +84,60 @@ export class ERC20Actions {
       this.transfersPagination = transfers.meta;
       this.previousFetchLength = transfers.array.length;
 
+      if (reset) {
+        this.store.getState().transfersSuccess(transfers.array);
+        return true;
+      }
+
       this.store.getState().transfersSuccessAppend(transfers.array);
+      return true;
     } catch (error) {
       this.store.getState().transfersFailed();
     }
+
+    return false;
+  }
+
+  async getTransfersForScrollable(
+    address: string,
+    scrollableRef: React.RefObject<HTMLDivElement>,
+    refetchDelay = 500
+  ): Promise<() => void> {
+    try {
+      const isScrollable = isRefScrollable(scrollableRef);
+
+      if (!isScrollable) {
+        // try and fetch until we have enough to scroll, stop if we have no more to fetch
+        const hasMore = await this.getTransfers(address);
+        if (!hasMore) {
+          return () => {};
+        }
+
+        await delay(refetchDelay);
+
+        return this.getTransfersForScrollable(address, scrollableRef);
+      }
+
+      const listener = () => {
+        if (scrollableRef.current) {
+          if (
+            scrollableRef.current.scrollTop +
+              scrollableRef.current.clientHeight >=
+            scrollableRef.current.scrollHeight
+          ) {
+            this.getTransfers(address);
+          }
+        }
+      };
+
+      scrollableRef.current?.addEventListener("scroll", listener);
+
+      return () => {
+        // remove listener
+        scrollableRef.current?.removeEventListener("scroll", listener);
+      };
+    } catch (error) {}
+    return () => {};
   }
 }
 
