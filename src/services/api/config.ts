@@ -32,7 +32,7 @@ export interface Config {
     url: string;
   };
   node: {
-    chainId: number;
+    chain_id: number;
     url: string;
     ws_url: string;
   };
