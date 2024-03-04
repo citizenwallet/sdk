@@ -177,6 +177,48 @@ export class ERC20Actions {
     cleanupFunctionRef.current = () => {};
     return;
   }
+
+  private isListening = false;
+  private listenMaxDate = new Date();
+  async listenForTransfers(
+    address: string,
+    fetchInterval = 1000
+  ): Promise<void> {
+    try {
+      if (this.isListening) {
+        return;
+      }
+
+      const params = {
+        fromDate: this.listenMaxDate.toISOString(),
+        limit: this.fetchLimit,
+        offset: 0,
+      };
+
+      const transfers = await this.indexerService.getNewTransfers(
+        this.tokenAddress,
+        address,
+        params
+      );
+
+      if (transfers.array.length > 0) {
+        this.store.getState().transfersPut(transfers.array);
+        this.listenMaxDate = new Date();
+      }
+
+      await delay(fetchInterval);
+
+      return this.listenForTransfers(address, fetchInterval);
+    } catch (error) {
+      //
+    }
+  }
+
+  async stopListeners() {
+    if (this.isListening) {
+      this.isListening = false;
+    }
+  }
 }
 
 /**

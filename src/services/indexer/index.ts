@@ -39,6 +39,10 @@ export interface TransferQueryParams {
   maxDate: string;
 }
 
+export interface NewTransfersQueryParams {
+  fromDate: string;
+}
+
 export class IndexerService {
   private url: string;
   private key: string;
@@ -60,6 +64,27 @@ export class IndexerService {
 
       if (params.maxDate) {
         url += `&maxDate=${params.maxDate}`;
+      }
+    }
+
+    const resp = await fetch(url, {
+      headers: { Authorization: `Bearer ${this.key}` },
+    });
+    return resp.json();
+  }
+
+  async getNewTransfers(
+    tokenAddress: string,
+    accountAddress: string,
+    params?: PaginationParams & NewTransfersQueryParams
+  ): Promise<ArrayResponse<Transfer, IndexerResponsePaginationMetadata>> {
+    let url = `${this.url}/logs/v2/transfers/${tokenAddress}/${accountAddress}/new`;
+
+    if (params) {
+      url += `?limit=${params.limit}&offset=${params.offset}`;
+
+      if (params.fromDate) {
+        url += `&fromDate=${params.fromDate}`;
       }
     }
 
