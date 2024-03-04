@@ -47,3 +47,7 @@ export { SessionService } from "./services/session";
 // ERC20
 export { ERC20Actions, useERC20 } from "./state/erc20";
 export { ERC20ContractService } from "./services/contracts/ERC20";
+
+// Hooks
+export { useSafeEffect } from "./hooks/useSafeEffect";
+export { useScrollableElementFetcher } from "./hooks/useScrollableElementFetcher";

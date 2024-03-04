@@ -56,13 +56,29 @@ export default createStore<ERC20Store>((set) => ({
       transfers: { ...state.transfers, loading: true, error: false },
     })),
   transfersSuccessAppend: (transfers: Transfer[]) =>
-    set((state) => ({
-      transfers: {
-        transfers: [...state.transfers.transfers, ...transfers],
-        loading: false,
-        error: false,
-      },
-    })),
+    set((state) => {
+      const existingTransfers = [...state.transfers.transfers];
+
+      // add or update the transfers based on their hash
+      for (const transfer of transfers) {
+        const index = existingTransfers.findIndex(
+          (t) => t.tx_hash === transfer.tx_hash
+        );
+        if (index === -1) {
+          existingTransfers.push(transfer);
+        } else {
+          existingTransfers[index] = transfer;
+        }
+      }
+
+      return {
+        transfers: {
+          transfers: [...state.transfers.transfers, ...transfers],
+          loading: false,
+          error: false,
+        },
+      };
+    }),
   transfersSuccessPrepend: (transfers: Transfer[]) =>
     set((state) => ({
       transfers: {

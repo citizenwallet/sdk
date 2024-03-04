@@ -1,6 +1,6 @@
-export const isRefScrollable = (ref: React.RefObject<HTMLDivElement>) => {
-  if (ref.current) {
-    return ref.current.scrollHeight > ref.current.clientHeight;
+export const isElementScrollable = (el: HTMLDivElement | null) => {
+  if (el) {
+    return el.scrollHeight > el.clientHeight;
   }
 
   return false;
