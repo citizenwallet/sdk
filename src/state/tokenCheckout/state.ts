@@ -40,12 +40,12 @@ const getInitialState = () => ({
     error: false,
   },
   sessionBalance: {
-    value: 0n,
+    value: BigInt(0),
     loading: false,
     error: false,
   },
   amountToPay: {
-    value: 0n,
+    value: BigInt(0),
     loading: false,
     error: false,
   },

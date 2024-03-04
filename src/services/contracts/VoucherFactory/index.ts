@@ -1,7 +1,7 @@
 import { BaseWallet, Contract, ethers, solidityPackedKeccak256 } from "ethers";
 
 import VoucherFactoryAbi from "smartcontracts/build/contracts/voucherFactory/VoucherFactory.abi.json";
-import VoucherFactoryBytecode from "smartcontracts/build/contracts/voucherFactory/VoucherFactory.bin";
+import VoucherFactoryBytecode from "smartcontracts/build/contracts/voucherFactory/VoucherFactory";
 import { deployContract, estimateContractDeployGas } from "../deploy";
 
 export const voucherFactory = new ethers.Interface(VoucherFactoryAbi);
@@ -49,7 +49,7 @@ export class VoucherFactoryService {
     );
   }
 
-  getAddress(code = 0n): Promise<string> {
+  getAddress(code = BigInt(0)): Promise<string> {
     const codeHash = this.getCodeHash(code);
 
     return this.contract.getFunction("getAddress")(codeHash);

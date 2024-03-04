@@ -18,7 +18,7 @@ export class AccountFactoryService {
     this.signer = signer;
   }
 
-  getAddress(salt = 0n): Promise<string> {
+  getAddress(salt = BigInt(0)): Promise<string> {
     return this.contract.getFunction("getAddress")(this.signer.address, salt);
   }
 }

@@ -25,7 +25,7 @@ export type ERC20Store = {
 
 const getInitialState = () => ({
   balance: {
-    value: 0n,
+    value: BigInt(0),
     loading: false,
     error: false,
   },

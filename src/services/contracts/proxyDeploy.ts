@@ -6,6 +6,9 @@ import {
   BaseWallet,
 } from "ethers";
 
+import ProxyAbi from "smartcontracts/build/contracts/erc1967Proxy/ERC1967Proxy.abi.json";
+import ProxyBytecode from "smartcontracts/build/contracts/erc1967Proxy/ERC1967Proxy";
+
 export const estimateContractDeployGas = async ({
   signer,
   constructorArgs = [],
@@ -43,11 +46,13 @@ export const estimateContractDeployGas = async ({
 export const deployContract = async ({
   signer,
   constructorArgs = [],
+  initializerCallData,
   contractABI,
   contractBytecode,
 }: {
   signer: BaseWallet;
   constructorArgs?: any[];
+  initializerCallData?: string;
   contractABI: Interface | InterfaceAbi;
   contractBytecode:
     | BytesLike
@@ -68,5 +73,17 @@ export const deployContract = async ({
 
   console.log(`Contract deployed at address: ${contractAddress}`);
 
-  return contractAddress;
+  const proxyFactory = new ContractFactory(ProxyAbi, ProxyBytecode, signer);
+
+  // Deploy the proxy
+  const proxy = initializerCallData
+    ? await proxyFactory.deploy(contractAddress, initializerCallData)
+    : await proxyFactory.deploy(contractAddress);
+
+  // Wait for the proxy to be mined
+  await proxy.waitForDeployment();
+
+  const proxyAddress = await proxy.getAddress();
+
+  return proxyAddress;
 };
