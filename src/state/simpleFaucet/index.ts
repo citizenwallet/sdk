@@ -56,8 +56,8 @@ export class SimpleFaucetActions {
 
       this.store.getState().fetchContractMetadataSuccess({
         token,
-        amount,
-        redeemInterval,
+        amount: Number(amount),
+        redeemInterval: Number(redeemInterval),
         redeemAdmin,
       });
     } catch (error) {

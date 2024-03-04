@@ -54,11 +54,11 @@ export class SimpleFaucetContractService {
     return this.contract.getFunction("token")();
   }
 
-  amount(): Promise<number> {
+  amount(): Promise<bigint> {
     return this.contract.getFunction("amount")();
   }
 
-  redeemInterval(): Promise<number> {
+  redeemInterval(): Promise<bigint> {
     return this.contract.getFunction("redeemInterval")();
   }
 
@@ -66,7 +66,7 @@ export class SimpleFaucetContractService {
     return this.contract.getFunction("redeemAdmin")();
   }
 
-  redeemed(hash: string): Promise<number> {
+  redeemed(hash: string): Promise<bigint> {
     return this.contract.getFunction("redeemed")(hash);
   }
 
