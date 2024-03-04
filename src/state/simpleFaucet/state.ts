@@ -5,10 +5,12 @@ export type SimpleFaucetStore = {
   error: boolean;
   metadataLoading: boolean;
   metadataError: boolean;
-  token?: string;
-  amount?: number;
-  redeemInterval?: number;
-  redeemAdmin?: string;
+  metadata: {
+    token: string;
+    amount: number;
+    redeemInterval: number;
+    redeemAdmin: string;
+  };
   request: () => void;
   requestMetadata: () => void;
   fetchContractMetadataSuccess: (metadata: {
@@ -28,10 +30,12 @@ const getInitialState = () => ({
   error: false,
   metadataLoading: false,
   metadataError: false,
-  token: undefined,
-  amount: undefined,
-  redeemInterval: undefined,
-  redeemAdmin: undefined,
+  metadata: {
+    token: "",
+    amount: 0,
+    redeemInterval: 0,
+    redeemAdmin: "",
+  },
 });
 
 export default createStore<SimpleFaucetStore>((set) => ({
@@ -39,7 +43,7 @@ export default createStore<SimpleFaucetStore>((set) => ({
   request: () => set({ loading: true, error: false }),
   requestMetadata: () => set({ metadataLoading: true, metadataError: false }),
   fetchContractMetadataSuccess: (metadata) =>
-    set({ loading: false, error: false, ...metadata }),
+    set({ metadata, metadataLoading: false, metadataError: false }),
   redeemSuccess: () => set({ loading: false, error: false }),
   requestMetadataFailed: () =>
     set({ metadataLoading: false, metadataError: true }),
