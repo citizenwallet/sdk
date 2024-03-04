@@ -54,6 +54,26 @@ export class IndexerService {
 
   async getAllTransfers(
     tokenAddress: string,
+    params?: PaginationParams & TransferQueryParams
+  ): Promise<ArrayResponse<Transfer, IndexerResponsePaginationMetadata>> {
+    let url = `${this.url}/logs/v2/transfers/${tokenAddress}`;
+
+    if (params) {
+      url += `?limit=${params.limit}&offset=${params.offset}`;
+
+      if (params.maxDate) {
+        url += `&maxDate=${params.maxDate}`;
+      }
+    }
+
+    const resp = await fetch(url, {
+      headers: { Authorization: `Bearer ${this.key}` },
+    });
+    return resp.json();
+  }
+
+  async getTransfers(
+    tokenAddress: string,
     accountAddress: string,
     params?: PaginationParams & TransferQueryParams
   ): Promise<ArrayResponse<Transfer, IndexerResponsePaginationMetadata>> {

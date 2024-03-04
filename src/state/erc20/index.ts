@@ -8,7 +8,7 @@ import {
   IndexerResponsePaginationMetadata,
   IndexerService,
 } from "../../services/indexer";
-import { isRefScrollable } from "../../utils/scroll";
+import { isElementScrollable } from "../../utils/scroll";
 import { delay } from "../../utils/delay";
 
 type erc20StoreSelector<T> = (state: ERC20Store) => T;
@@ -64,7 +64,7 @@ export class ERC20Actions {
    * @param reset - Indicates whether to reset the state before fetching transfers.
    * @returns A promise that resolves to a boolean indicating whether the transfers were successfully retrieved.
    */
-  async getTransfers(address: string, reset = false): Promise<boolean> {
+  async getTransfers(address?: string, reset = false): Promise<boolean> {
     try {
       if (reset) {
         this.fetchMaxDate = new Date();
@@ -90,11 +90,13 @@ export class ERC20Actions {
           : 0,
       };
 
-      const transfers = await this.indexerService.getAllTransfers(
-        this.tokenAddress,
-        address,
-        params
-      );
+      const transfers = address
+        ? await this.indexerService.getTransfers(
+            this.tokenAddress,
+            address,
+            params
+          )
+        : await this.indexerService.getAllTransfers(this.tokenAddress, params);
 
       this.transfersPagination = transfers.meta;
       this.previousFetchLength = transfers.array.length;
@@ -111,71 +113,6 @@ export class ERC20Actions {
     }
 
     return false;
-  }
-
-  /**
-   * Fetches transfers for a given address automatically based on scrolling behavior in a given div.
-   * This allows you to easily implement infinite scrolling for transfers.
-   * The function will automatically stop fetching when there are no more transfers to fetch.
-   *
-   * If the div isn't scrollable yet, it will keep trying to fetch until it is.
-   *
-   * @param address - The address for which transfers are to be fetched.
-   * @param scrollableRef - A reference to the scrollable element.
-   * @param cleanupFunctionRef - A mutable reference to the cleanup function.
-   * @param refetchDelay - The delay (in milliseconds) between subsequent fetches. Default is 500ms.
-   */
-  async getTransfersForScrollable(
-    address: string,
-    scrollableRef: React.RefObject<HTMLDivElement>,
-    cleanupFunctionRef: React.MutableRefObject<() => void>,
-    refetchDelay = 500
-  ) {
-    try {
-      const isScrollable = isRefScrollable(scrollableRef);
-
-      if (!isScrollable) {
-        // try and fetch until we have enough to scroll, stop if we have no more to fetch
-        const hasMore = await this.getTransfers(address);
-        if (!hasMore) {
-          cleanupFunctionRef.current = () => {};
-          return;
-        }
-
-        await delay(refetchDelay);
-
-        this.getTransfersForScrollable(
-          address,
-          scrollableRef,
-          cleanupFunctionRef,
-          refetchDelay
-        );
-
-        return;
-      }
-
-      const listener = () => {
-        if (scrollableRef.current) {
-          if (
-            scrollableRef.current.scrollTop +
-              scrollableRef.current.clientHeight >=
-            scrollableRef.current.scrollHeight
-          ) {
-            this.getTransfers(address);
-          }
-        }
-      };
-
-      scrollableRef.current?.addEventListener("scroll", listener);
-
-      cleanupFunctionRef.current = () => {
-        // remove listener
-        scrollableRef.current?.removeEventListener("scroll", listener);
-      };
-      return;
-    } catch (error) {}
-    cleanupFunctionRef.current = () => {};
-    return;
   }
 
   private isListening = false;
