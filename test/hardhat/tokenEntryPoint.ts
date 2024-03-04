@@ -63,19 +63,19 @@ export async function createTokenEntryPointFixture() {
     await tokenEntryPointContract.getAddress()
   );
 
-  await accountFactory.createAccount(friend1.address, 0n);
+  await accountFactory.createAccount(friend1.address, BigInt(0));
 
-  await accountFactory.createAccount(friend2.address, 0n);
+  await accountFactory.createAccount(friend2.address, BigInt(0));
 
   const account1 = await ethers.getContractAtFromArtifact(
     AccountArtifact,
-    await accountFactory.getFunction("getAddress")(friend1.address, 0n),
+    await accountFactory.getFunction("getAddress")(friend1.address, BigInt(0)),
     friend1
   );
 
   const account2 = await ethers.getContractAtFromArtifact(
     AccountArtifact,
-    await accountFactory.getFunction("getAddress")(friend2.address, 0n),
+    await accountFactory.getFunction("getAddress")(friend2.address, BigInt(0)),
     friend2
   );
 

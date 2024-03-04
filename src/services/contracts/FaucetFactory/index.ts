@@ -1,5 +1,4 @@
 import {
-  BaseWallet,
   Contract,
   JsonRpcProvider,
   TransactionResponse,
@@ -58,9 +57,9 @@ export class FaucetFactoryContractService {
 
     const { maxFeePerGas } = await this.provider.getFeeData();
 
-    const estimatedCost = gas * (maxFeePerGas || 1n);
+    const estimatedCost = gas * (maxFeePerGas || BigInt(1));
 
-    return estimatedCost + estimatedCost / 10n;
+    return estimatedCost + estimatedCost / BigInt(10);
   }
 
   async estimateCreateSimpleFaucet(
@@ -90,9 +89,9 @@ export class FaucetFactoryContractService {
 
     const { maxFeePerGas } = await this.provider.getFeeData();
 
-    const estimatedCost = gas * (maxFeePerGas || 1n);
+    const estimatedCost = gas * (maxFeePerGas || BigInt(1));
 
-    return estimatedCost + estimatedCost / 10n;
+    return estimatedCost + estimatedCost / BigInt(10);
   }
 
   async createSimpleFaucet(

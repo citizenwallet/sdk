@@ -49,20 +49,20 @@ const getInitialState = () => ({
     error: false,
   },
   sessionBalance: {
-    value: 0n,
+    value: BigInt(0),
     loading: false,
     error: false,
   },
   amountToPay: {
-    value: 0n,
+    value: BigInt(0),
     loading: false,
     error: false,
   },
   sessionOwner: undefined,
   sessionOwnerError: false,
   refund: {
-    fees: 0n,
-    amount: 0n,
+    fees: BigInt(0),
+    amount: BigInt(0),
     loading: false,
     error: false,
   },
@@ -110,7 +110,12 @@ export default createStore<CheckoutStore>((set) => ({
   setSessionOwnerError: (error) => set({ sessionOwnerError: error }),
   refundRequest: () =>
     set({
-      refund: { fees: 0n, amount: 0n, loading: true, error: false },
+      refund: {
+        fees: BigInt(0),
+        amount: BigInt(0),
+        loading: true,
+        error: false,
+      },
     }),
   refundRequested: (fees: bigint, amount: bigint) =>
     set({

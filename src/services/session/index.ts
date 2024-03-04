@@ -184,7 +184,7 @@ export class SessionService {
     const maxFeePerGas = baseFeePerGas + maxPriorityFeePerGas;
 
     // Estimate the gas cost for the transaction
-    const gasLimit = 21000n; // for a simple Ether transfer
+    const gasLimit = BigInt(21000); // for a simple Ether transfer
     const gasCost = maxFeePerGas * gasLimit;
 
     // Get the account balance
@@ -193,7 +193,7 @@ export class SessionService {
     // Calculate the amount to send
     const amount = balance - gasCost;
 
-    if (amount <= 0n) {
+    if (amount <= BigInt(0)) {
       throw new Error("Insufficient funds");
     }
 

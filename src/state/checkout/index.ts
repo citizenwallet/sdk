@@ -41,7 +41,7 @@ export class CheckoutActions {
     this.sessionService.updateProvider(provider, wsUrl, accountFactoryAddress);
 
     this.store.getState().reset();
-    this.previousBalance = 0n;
+    this.previousBalance = BigInt(0);
 
     this.store.getState().setSessionOwner(this.sessionService.getOwner());
   }
@@ -72,7 +72,8 @@ export class CheckoutActions {
     try {
       this.store.getState().checkAmountRequest();
 
-      const amount = (await evaluateAmount(this.sessionService.signer)) || 0n;
+      const amount =
+        (await evaluateAmount(this.sessionService.signer)) || BigInt(0);
 
       this.store.getState().checkAmountSuccess(amount);
     } catch (error) {
@@ -128,9 +129,12 @@ export class CheckoutActions {
   }
 
   private isListening = false;
-  private previousBalance: bigint = 0n;
+  private previousBalance: bigint = BigInt(0);
   private isBelowAmountToPay(amount: bigint) {
-    if (amount === 0n || this.store.getState().amountToPay.value === 0n) {
+    if (
+      amount === BigInt(0) ||
+      this.store.getState().amountToPay.value === BigInt(0)
+    ) {
       // something is wrong or not yet loaded
       return true;
     }

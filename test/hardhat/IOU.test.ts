@@ -81,10 +81,10 @@ describe("IOU", () => {
 
     await erc20IOUActions.getHash(
       friend1.address,
-      100n,
+      BigInt(100),
       current + 300,
       current,
-      0n
+      BigInt(0)
     );
 
     state = erc20IOUActions.store.getState();
@@ -103,7 +103,13 @@ describe("IOU", () => {
 
     expect(state.hash).to.equal(undefined);
 
-    await erc20IOUActions.getHash("0x123", 100n, current + 300, current, 0n);
+    await erc20IOUActions.getHash(
+      "0x123",
+      BigInt(100),
+      current + 300,
+      current,
+      BigInt(0)
+    );
 
     state = erc20IOUActions.store.getState();
 
@@ -123,7 +129,7 @@ describe("IOU", () => {
       1n,
       current + 300,
       current,
-      0n
+      BigInt(0)
     );
 
     let state = erc20IOUActions.store.getState();
@@ -146,7 +152,7 @@ describe("IOU", () => {
       1n,
       current + 300,
       current,
-      0n,
+      BigInt(0),
       signedHash
     );
 
@@ -164,7 +170,7 @@ describe("IOU", () => {
       1n,
       current + 300,
       current,
-      0n,
+      BigInt(0),
       signedHash
     );
 
@@ -189,10 +195,10 @@ describe("IOU", () => {
 
     const hash = getLocalIOUHash(
       owner.address,
-      1n,
+      BigInt(1),
       current + 300,
       current,
-      0n,
+      BigInt(0),
       network.chainId,
       await tokeniou.getAddress()
     );
@@ -211,7 +217,7 @@ describe("IOU", () => {
       1n,
       current + 300,
       current,
-      0n,
+      BigInt(0),
       signedHash
     );
 
@@ -226,10 +232,10 @@ describe("IOU", () => {
 
     await erc20IOUActions.redeem(
       owner.address,
-      1n,
+      BigInt(1),
       current + 300,
       current,
-      0n,
+      BigInt(0),
       signedHash
     );
 

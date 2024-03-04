@@ -29,7 +29,7 @@ export type FaucetFactoryStore = {
 
 const getInitialState = () => ({
   simpleFaucetGasEstimate: {
-    value: 0n,
+    value: BigInt(0),
     loading: false,
     error: false,
   },

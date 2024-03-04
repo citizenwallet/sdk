@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { JsonRpcSigner } from "ethers";
+import { useMemo, useRef } from "react";
+import { BaseWallet, JsonRpcProvider, JsonRpcSigner } from "ethers";
 import { StoreApi, useStore } from "zustand";
 import store, { SimpleFaucetStore } from "./state";
 
@@ -23,16 +23,14 @@ export class SimpleFaucetActions {
    */
   constructor(
     contractAddress: string,
-    signer: JsonRpcSigner,
-    sender: string,
-    config: Config
+    provider: BaseWallet | JsonRpcProvider,
+    account: string,
+    bundler: BundlerService
   ) {
-    const bundler = new BundlerService(config);
-
     this.contract = new SimpleFaucetContractService(
       contractAddress,
-      signer,
-      sender,
+      provider,
+      account,
       bundler
     );
 
@@ -89,16 +87,25 @@ export class SimpleFaucetActions {
  */
 export const useSimpleFaucetContract = (
   contractAddress: string,
-  rpcSigner: JsonRpcSigner,
-  sender: string,
-  config: Config
+  config: Config,
+  account: string,
+  signer?: BaseWallet
 ): [<T>(selector: simpleFaucetStoreSelector<T>) => T, SimpleFaucetActions] => {
-  const simpleFaucetActionsRef = useRef(
-    new SimpleFaucetActions(contractAddress, rpcSigner, sender, config)
+  const { url: rpcUrl } = config.node;
+
+  const simpleFaucetActions = useMemo(
+    () =>
+      new SimpleFaucetActions(
+        contractAddress,
+        signer ?? new JsonRpcProvider(rpcUrl),
+        account,
+        new BundlerService(config)
+      ),
+    [contractAddress, rpcUrl, config, account, signer]
   );
 
   const useBoundStore = <T>(selector: simpleFaucetStoreSelector<T>) =>
-    useStore(simpleFaucetActionsRef.current.store, selector); // TODO: fix the type: (selector: simpleFaucetStoreSelector) => unknown
+    useStore(simpleFaucetActions.store, selector); // TODO: fix the type: (selector: simpleFaucetStoreSelector) => unknown
 
-  return [useBoundStore, simpleFaucetActionsRef.current];
+  return [useBoundStore, simpleFaucetActions];
 };

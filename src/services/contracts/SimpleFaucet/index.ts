@@ -1,29 +1,51 @@
-import { Contract, JsonRpcSigner, ethers } from "ethers";
+import { BaseWallet, Contract, JsonRpcProvider, ethers } from "ethers";
 
 import SimpleFaucetAbi from "smartcontracts/build/contracts/simpleFaucet/SimpleFaucet.abi.json";
+import SimpleFaucetBytecode from "smartcontracts/build/contracts/simpleFaucet/SimpleFaucet";
 import { BundlerService, UserOp } from "../../bundler";
+import { deployContract, estimateContractDeployGas } from "../deploy";
 
 export const simpleFaucet = new ethers.Interface(SimpleFaucetAbi);
+
+export const estimateDeployVoucherFactory = async (
+  signer: BaseWallet
+): Promise<bigint> => {
+  return estimateContractDeployGas({
+    signer,
+    contractABI: SimpleFaucetAbi,
+    contractBytecode: SimpleFaucetBytecode,
+  });
+};
+
+export const deployVoucherFactory = async (
+  signer: BaseWallet
+): Promise<string> => {
+  return deployContract({
+    signer,
+    contractABI: SimpleFaucetAbi,
+    contractBytecode: SimpleFaucetBytecode,
+  });
+};
 
 export class SimpleFaucetContractService {
   /**
    * The contract instance.
    */
   contractAddress: string;
-  signer: JsonRpcSigner;
-  sender: string;
+  signer: BaseWallet | JsonRpcProvider;
+  account: string;
   contract: Contract;
   bundler: BundlerService;
 
   constructor(
     contractAddress: string,
-    signer: JsonRpcSigner,
-    sender: string,
+    signer: BaseWallet | JsonRpcProvider,
+    account: string,
     bundler: BundlerService
   ) {
     this.contractAddress = contractAddress;
     this.signer = signer;
-    this.sender = sender;
+    this.account = account;
     this.contract = new Contract(contractAddress, SimpleFaucetAbi, signer);
     this.bundler = bundler;
   }
@@ -51,8 +73,8 @@ export class SimpleFaucetContractService {
   redeem(): Promise<UserOp> {
     const calldata = simpleFaucet.encodeFunctionData("redeem", []);
     return this.bundler.submit(
-      this.signer,
-      this.sender,
+      this.signer as BaseWallet,
+      this.account,
       this.contractAddress,
       calldata
     );
