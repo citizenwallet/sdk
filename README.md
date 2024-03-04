@@ -3,6 +3,8 @@
     <h1>Citizen Wallet SDK</h1>
 </div>
 
+🚧 Alpha
+
 An easy-to-use SDK for building frontend interfaces that interact with a community server and any related smart contracts that we use. This SDK is frontend framework agnostic and includes types, API calls, and state management.
 
 # Introduction
