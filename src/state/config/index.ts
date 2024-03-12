@@ -16,11 +16,11 @@ export class ConfigActions {
     this.configService = new ConfigService(apiService);
   }
 
-  async getConfigs() {
+  async getConfigs(hidden = false) {
     try {
       this.store.getState().request();
 
-      const configs = await this.configService.get();
+      const configs = await this.configService.get(hidden);
 
       this.store.getState().getConfigsSuccess(configs);
     } catch (error) {

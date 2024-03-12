@@ -21,16 +21,20 @@ export class ConfigService {
     this.config = await this.api.getBySlug(slug);
   }
 
-  async get(): Promise<Config[]> {
+  async get(hidden = false): Promise<Config[]> {
     if (!this.configs) {
       this.configs = await this.api.get();
 
-      return this.configs!;
+      return !hidden
+        ? this.configs.filter((config) => !config.community.hidden)
+        : this.configs;
     }
 
     this.setConfig();
 
-    return this.configs!;
+    return !hidden
+      ? this.configs.filter((config) => !config.community.hidden)
+      : this.configs;
   }
 
   async getBySlug(slug: string): Promise<Config> {
