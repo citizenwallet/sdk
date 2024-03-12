@@ -115,16 +115,23 @@ export class ERC20Actions {
     return false;
   }
 
-  private isListening = false;
+  private shouldStopListener: { [key: string]: boolean } = {};
+  private isListening: { [key: string]: boolean } = {};
   private listenMaxDate = new Date();
   async listenForTransfers(
     address: string,
-    fetchInterval = 1000
+    fetchInterval = 1000,
+    selfCall = false
   ): Promise<void> {
     try {
-      if (this.isListening) {
+      if (
+        this.shouldStopListener[address] ||
+        (!selfCall && this.isListening[address])
+      ) {
+        this.isListening[address] = false;
         return;
       }
+      this.isListening[address] = true;
 
       const params = {
         fromDate: this.listenMaxDate.toISOString(),
@@ -145,15 +152,15 @@ export class ERC20Actions {
 
       await delay(fetchInterval);
 
-      return this.listenForTransfers(address, fetchInterval);
+      return this.listenForTransfers(address, fetchInterval, true);
     } catch (error) {
       //
     }
   }
 
-  async stopListeners() {
-    if (this.isListening) {
-      this.isListening = false;
+  async stopListeners(address: string) {
+    if (!this.shouldStopListener[address]) {
+      this.shouldStopListener[address] = true;
     }
   }
 }
