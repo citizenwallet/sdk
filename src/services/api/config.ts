@@ -1,6 +1,16 @@
 import { BaseApi } from "./api";
 import { randomCacheNumber } from "./utils";
 
+export interface ConfigCommunity {
+  name: string;
+  description: string;
+  url: string;
+  alias: string;
+  logo: string;
+  custom_domain?: string;
+  hidden?: boolean;
+}
+
 export interface ConfigToken {
   address: string;
   standard: string;
@@ -9,10 +19,21 @@ export interface ConfigToken {
   decimals: number;
 }
 
+export interface ConfigScan {
+  url: string;
+  name: string;
+}
+
 export interface ConfigIndexer {
   url: string;
   ipfs_url: string;
   key: string;
+}
+
+export interface ConfigNode {
+  chain_id: number;
+  url: string;
+  ws_url: string;
 }
 
 export interface Config {
@@ -25,19 +46,12 @@ export interface Config {
     customDomain?: string;
     hidden?: boolean;
   };
-  scan: {
-    url: string;
-    name: string;
-  };
+  scan: ConfigScan;
   indexer: ConfigIndexer;
   ipfs: {
     url: string;
   };
-  node: {
-    chain_id: number;
-    url: string;
-    ws_url: string;
-  };
+  node: ConfigNode;
   erc4337: {
     rpc_url: string;
     paymaster_address?: string;

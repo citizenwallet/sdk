@@ -25,6 +25,9 @@ export {
 } from "./state/faucetFactory";
 export { FaucetFactoryContractService } from "./services/contracts/FaucetFactory";
 
+// CommunityFactory
+export { CommunityFactoryContractService } from "./services/contracts/CommunityFactory";
+
 // SimpleFaucet
 export {
   SimpleFaucetActions,
@@ -35,7 +38,7 @@ export { SimpleFaucetContractService } from "./services/contracts/SimpleFaucet";
 // Config
 export { ConfigActions, useConfig } from "./state/config";
 export { ConfigService } from "./services/config";
-export { Config, ConfigToken, ConfigIndexer } from "./services/api/config";
+export * from "./services/api/config";
 
 // Checkout
 export { CheckoutActions, useCheckout } from "./state/checkout";
@@ -51,3 +54,6 @@ export { ERC20ContractService } from "./services/contracts/ERC20";
 // Hooks
 export { useSafeEffect } from "./hooks/useSafeEffect";
 export { useScrollableElementFetcher } from "./hooks/useScrollableElementFetcher";
+
+// Constants
+export * from "./constants/networks";

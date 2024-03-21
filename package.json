@@ -59,7 +59,7 @@
     "@openzeppelin/contracts-upgradeable": "^5.0.2",
     "ethers": "^6.11.1",
     "react": "^18.2.0",
-    "smartcontracts": "github:citizenwallet/smartcontracts#v0.0.91",
+    "smartcontracts": "github:citizenwallet/smartcontracts#v0.0.94",
     "zustand": "^4.5.2"
   }
 }
