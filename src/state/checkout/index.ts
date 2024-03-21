@@ -3,7 +3,7 @@ import store, { CheckoutStore } from "./state";
 import { useMemo } from "react";
 import { SessionService } from "../../services/session";
 import { BaseWallet, JsonRpcProvider, getAddress } from "ethers";
-import { Config } from "../../services/api/config";
+import { Network } from "../../constants/networks";
 
 type checkoutStoreSelector<T> = (state: CheckoutStore) => T;
 
@@ -16,7 +16,7 @@ export class CheckoutActions {
   constructor(
     provider: JsonRpcProvider,
     wsUrl: string,
-    accountFactoryAddress: string,
+    accountFactoryAddress?: string,
     signer?: BaseWallet | undefined
   ) {
     this.store = store;
@@ -34,7 +34,7 @@ export class CheckoutActions {
   updateProvider(
     provider: JsonRpcProvider,
     wsUrl: string,
-    accountFactoryAddress: string
+    accountFactoryAddress?: string
   ) {
     this.stopListeners();
     this.provider = provider;
@@ -210,19 +210,13 @@ export class CheckoutActions {
 }
 
 export const useCheckout = (
-  config: Config
+  network: Network
 ): [<T>(selector: checkoutStoreSelector<T>) => T, CheckoutActions] => {
-  const { url: rpcUrl, ws_url: wsUrl } = config.node;
-  const { account_factory_address: accountFactoryAddress } = config.erc4337;
+  const { rpcUrl, wsRpcUrl } = network;
 
   const configActions = useMemo(
-    () =>
-      new CheckoutActions(
-        new JsonRpcProvider(rpcUrl),
-        wsUrl,
-        accountFactoryAddress
-      ),
-    [rpcUrl, wsUrl, accountFactoryAddress]
+    () => new CheckoutActions(new JsonRpcProvider(rpcUrl), wsRpcUrl),
+    [rpcUrl, wsRpcUrl]
   );
 
   const useBoundStore = <T>(selector: checkoutStoreSelector<T>) =>
