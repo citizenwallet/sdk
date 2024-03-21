@@ -20,7 +20,7 @@ interface RefundRequest {
 export class SessionService {
   signer: BaseWallet;
   wsUrl: string;
-  accountFactoryService: AccountFactoryService;
+  accountFactoryService?: AccountFactoryService;
 
   rpcProvider: JsonRpcProvider;
 
@@ -30,7 +30,7 @@ export class SessionService {
   constructor(
     provider: JsonRpcProvider,
     wsUrl: string,
-    accountFactoryAddress: string,
+    accountFactoryAddress?: string,
     signer?: BaseWallet
   ) {
     this.wsUrl = wsUrl;
@@ -38,10 +38,12 @@ export class SessionService {
 
     if (signer) {
       this.signer = signer.connect(provider);
-      this.accountFactoryService = new AccountFactoryService(
-        accountFactoryAddress,
-        this.signer
-      );
+      if (accountFactoryAddress) {
+        this.accountFactoryService = new AccountFactoryService(
+          accountFactoryAddress,
+          this.signer
+        );
+      }
       localStorage.setItem("cw-session-key", signer.signingKey.privateKey);
       this.getOwner();
       return;
@@ -52,36 +54,42 @@ export class SessionService {
     if (key) {
       const wallet = new Wallet(key);
       this.signer = wallet.connect(provider);
-      this.accountFactoryService = new AccountFactoryService(
-        accountFactoryAddress,
-        this.signer
-      );
+      if (accountFactoryAddress) {
+        this.accountFactoryService = new AccountFactoryService(
+          accountFactoryAddress,
+          this.signer
+        );
+      }
       return;
     }
 
     const wallet = Wallet.createRandom();
     this.signer = wallet.connect(provider);
-    this.accountFactoryService = new AccountFactoryService(
-      accountFactoryAddress,
-      this.signer
-    );
+    if (accountFactoryAddress) {
+      this.accountFactoryService = new AccountFactoryService(
+        accountFactoryAddress,
+        this.signer
+      );
+    }
     localStorage.setItem("cw-session-key", wallet.privateKey);
   }
 
   updateProvider(
     provider: JsonRpcProvider,
     wsUrl: string,
-    accountFactoryAddress: string
+    accountFactoryAddress?: string
   ) {
     this.wsUrl = wsUrl;
     this.rpcProvider = provider;
 
     this.signer.provider?.destroy();
     this.signer = this.signer.connect(provider);
-    this.accountFactoryService = new AccountFactoryService(
-      accountFactoryAddress,
-      this.signer
-    );
+    if (accountFactoryAddress) {
+      this.accountFactoryService = new AccountFactoryService(
+        accountFactoryAddress,
+        this.signer
+      );
+    }
     this.getOwner();
   }
 
@@ -113,6 +121,10 @@ export class SessionService {
   }
 
   async getAccountAddress(forceUpdate = false): Promise<string> {
+    if (!this.accountFactoryService) {
+      throw new Error("AccountFactoryService not set");
+    }
+
     if (this.accountAddress && !forceUpdate) {
       return Promise.resolve(this.accountAddress);
     }
@@ -216,10 +228,12 @@ export class SessionService {
 
     const wallet = Wallet.createRandom();
     this.signer = wallet.connect(this.rpcProvider);
-    this.accountFactoryService = new AccountFactoryService(
-      this.accountFactoryService.contractAddress,
-      this.signer
-    );
+    if (this.accountFactoryService) {
+      this.accountFactoryService = new AccountFactoryService(
+        this.accountFactoryService.contractAddress,
+        this.signer
+      );
+    }
     localStorage.setItem("cw-session-key", wallet.privateKey);
   }
 }
