@@ -28,4 +28,16 @@ export class ERC20ContractService {
       address
     );
   }
+
+  symbol(): Promise<string> {
+    return this.contract.getFunction("symbol")();
+  }
+
+  name(): Promise<string> {
+    return this.contract.getFunction("name")();
+  }
+
+  decimals(): Promise<number> {
+    return this.contract.getFunction("decimals")();
+  }
 }

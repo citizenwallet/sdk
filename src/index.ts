@@ -26,6 +26,10 @@ export {
 export { FaucetFactoryContractService } from "./services/contracts/FaucetFactory";
 
 // CommunityFactory
+export {
+  CommunityFactoryContractActions,
+  useCommunityFactoryContract,
+} from "./state/communityFactory";
 export { CommunityFactoryContractService } from "./services/contracts/CommunityFactory";
 
 // SimpleFaucet

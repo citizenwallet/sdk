@@ -30,7 +30,10 @@ export class CommunityFactoryContractService {
     this.sessionService = sessionService;
   }
 
-  async estimateCreateWithDefaults(salt: number): Promise<bigint> {
+  async estimateCreateWithDefaults(
+    token: string,
+    salt: number
+  ): Promise<bigint> {
     const wallet = ethers.Wallet.createRandom();
 
     const contract = new Contract(
@@ -41,7 +44,7 @@ export class CommunityFactoryContractService {
 
     const gas = await contract
       .getFunction("create")
-      .estimateGas(wallet.address, salt);
+      .estimateGas(wallet.address, token, salt);
 
     const { maxFeePerGas } = await this.provider.getFeeData();
 
@@ -50,14 +53,20 @@ export class CommunityFactoryContractService {
     return estimatedCost + estimatedCost / BigInt(10);
   }
 
-  async estimateCreate(owner: string, salt: number): Promise<bigint> {
+  async estimateCreate(
+    owner: string,
+    token: string,
+    salt: number
+  ): Promise<bigint> {
     const contract = new Contract(
       this.contractAddress,
       CommunityFactoryAbi,
       this.sessionService.signer
     );
 
-    const gas = await contract.getFunction("create").estimateGas(owner, salt);
+    const gas = await contract
+      .getFunction("create")
+      .estimateGas(owner, token, salt);
 
     const { maxFeePerGas } = await this.provider.getFeeData();
 
@@ -66,21 +75,29 @@ export class CommunityFactoryContractService {
     return estimatedCost + estimatedCost / BigInt(10);
   }
 
-  async create(owner: string, salt: number): Promise<TransactionResponse> {
+  async create(
+    owner: string,
+    token: string,
+    salt: number
+  ): Promise<TransactionResponse> {
     const contract = new Contract(
       this.contractAddress,
       CommunityFactoryAbi,
       this.sessionService.signer
     );
-    return contract.getFunction("create")(owner, salt);
+    return contract.getFunction("create")(owner, token, salt);
   }
 
-  async get(owner: string, salt: number): Promise<string> {
+  async get(
+    owner: string,
+    token: string,
+    salt: number
+  ): Promise<[string, string, string, string]> {
     const contract = new Contract(
       this.contractAddress,
       CommunityFactoryAbi,
       this.sessionService.signer
     );
-    return contract.getFunction("get")(owner, salt);
+    return contract.getFunction("get")(owner, token, salt);
   }
 }
