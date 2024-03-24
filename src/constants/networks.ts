@@ -22,7 +22,7 @@ export const NETWORKS: Networks = {
       "https://nd-147-012-483.p2pify.com/d8ba4ac942ec62a14e0cc844d373d9d2",
     wsRpcUrl:
       "wss://ws-nd-147-012-483.p2pify.com/d8ba4ac942ec62a14e0cc844d373d9d2",
-    communityFactoryAddress: "0x5DD5A9e6C5698EB569A4CA4a8fD3690a699E0742",
+    communityFactoryAddress: "0x07aC4b41a8713aAf8137Ed1388ef7f986D01cea6",
   },
   "8453": {
     chainId: 8453,
@@ -33,7 +33,7 @@ export const NETWORKS: Networks = {
       "https://nd-231-060-478.p2pify.com/1200e5d6ce27d6e7cd61ab0567a9927e",
     wsRpcUrl:
       "wss://ws-nd-231-060-478.p2pify.com/1200e5d6ce27d6e7cd61ab0567a9927e",
-    communityFactoryAddress: "0xfB1774EaD62A556DB569b5354b276d7aa4175308",
+    communityFactoryAddress: "0x1EaF6B6A6967608aF6c77224f087b042095891EB",
   },
   "84532": {
     chainId: 84532,
@@ -42,7 +42,7 @@ export const NETWORKS: Networks = {
     explorer: "https://sepolia.basescan.org/",
     rpcUrl: "https://base-sepolia-rpc.publicnode.com",
     wsRpcUrl: "wss://base-sepolia-rpc.publicnode.com",
-    communityFactoryAddress: "0x0da2F14429BeF7f7B55009052Ce69B9f5bD129bd",
+    communityFactoryAddress: "0x35fbB23DEf6346Afa686742B3B39105E0561Fc82",
   },
   "42220": {
     chainId: 42220,
@@ -53,7 +53,7 @@ export const NETWORKS: Networks = {
       "https://powerful-bold-lake.celo-mainnet.discover.quiknode.pro/90b75be007c48ab0af5c36c702116f5d863e65dc",
     wsRpcUrl:
       "wss://powerful-bold-lake.celo-mainnet.discover.quiknode.pro/90b75be007c48ab0af5c36c702116f5d863e65dc",
-    communityFactoryAddress: "0x944EDEc373b18B8329779F20C6Fd9baf6CB79c81",
+    communityFactoryAddress: "0xbAbabCF5e6459c224B0625A29306c9DE7A593542",
   },
   "44787": {
     chainId: 44787,
@@ -62,6 +62,6 @@ export const NETWORKS: Networks = {
     explorer: "https://alfajores.celoscan.io",
     rpcUrl: "https://rpc-mainnet.maticvigil.com",
     wsRpcUrl: "wss://rpc-mainnet.maticvigil.com/ws",
-    communityFactoryAddress: "0xFE213c74e25505B232CE4C7f89647408bE6f71d2",
+    communityFactoryAddress: "0x6b3a1f4277391526413F583c23D5B9EF4d2fE986",
   },
 };

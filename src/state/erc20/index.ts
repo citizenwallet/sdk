@@ -8,8 +8,8 @@ import {
   IndexerResponsePaginationMetadata,
   IndexerService,
 } from "../../services/indexer";
-import { isElementScrollable } from "../../utils/scroll";
 import { delay } from "../../utils/delay";
+import { Network } from "../../constants/networks";
 
 type erc20StoreSelector<T> = (state: ERC20Store) => T;
 
@@ -21,19 +21,27 @@ export class ERC20Actions {
 
   tokenAddress: string;
 
-  erc20Service: ERC20ContractService;
-  indexerService: IndexerService;
+  erc20Service?: ERC20ContractService;
+  indexerService?: IndexerService;
 
   constructor(
     tokenAddress: string,
     wsUrl: string,
     provider: JsonRpcProvider,
-    configIndexer: ConfigIndexer
+    configIndexer?: ConfigIndexer
   ) {
     this.store = store;
     this.tokenAddress = tokenAddress;
-    this.erc20Service = new ERC20ContractService(tokenAddress, wsUrl, provider);
-    this.indexerService = new IndexerService(configIndexer);
+    if (tokenAddress) {
+      this.erc20Service = new ERC20ContractService(
+        tokenAddress,
+        wsUrl,
+        provider
+      );
+    }
+    if (configIndexer) {
+      this.indexerService = new IndexerService(configIndexer);
+    }
   }
 
   /**
@@ -42,14 +50,42 @@ export class ERC20Actions {
    */
   async getBalance(address: string) {
     try {
+      if (!this.erc20Service) {
+        throw new Error("ERC20 service is not available.");
+      }
+
       this.store.getState().balanceRequest();
 
       const balance = await this.erc20Service.balanceOf(address);
 
       this.store.getState().balanceSuccess(balance);
     } catch (error) {
+      console.log(error);
       this.store.getState().balanceFailed();
     }
+  }
+
+  async getMetadata() {
+    try {
+      if (!this.erc20Service) {
+        throw new Error("ERC20 service is not available.");
+      }
+
+      this.store.getState().metadataRequest();
+
+      const symbol = await this.erc20Service.symbol();
+      const name = await this.erc20Service.name();
+      const decimals = await this.erc20Service.decimals();
+
+      this.store.getState().metadataSuccess(symbol, name, decimals);
+    } catch (error) {
+      console.log(error);
+      this.store.getState().metadataFailed();
+    }
+  }
+
+  clearMetadata() {
+    this.store.getState().metadataClear();
   }
 
   private fetchMaxDate = new Date();
@@ -66,6 +102,10 @@ export class ERC20Actions {
    */
   async getTransfers(address?: string, reset = false): Promise<boolean> {
     try {
+      if (!this.indexerService) {
+        throw new Error("Indexer service is not available.");
+      }
+
       if (reset) {
         this.fetchMaxDate = new Date();
         this.transfersPagination = undefined;
@@ -124,6 +164,10 @@ export class ERC20Actions {
     selfCall = false
   ): Promise<void> {
     try {
+      if (!this.indexerService) {
+        throw new Error("Indexer service is not available.");
+      }
+
       if (
         this.shouldStopListener[address] ||
         (!selfCall && this.isListening[address])
@@ -174,20 +218,21 @@ export class ERC20Actions {
  * @returns An array containing a selector function and ERC20 actions.
  */
 export const useERC20 = (
-  config: Config
+  network?: Network,
+  tokenAddress?: string,
+  config?: Config
 ): [<T>(selector: erc20StoreSelector<T>) => T, ERC20Actions] => {
-  const { url: rpcUrl, ws_url: wsUrl } = config.node;
-  const { address } = config.token;
+  const { rpcUrl, wsRpcUrl } = network || { rpcUrl: "", wsRpcUrl: "" };
 
   const configActions = useMemo(
     () =>
       new ERC20Actions(
-        address,
-        wsUrl,
+        tokenAddress || "",
+        wsRpcUrl,
         new JsonRpcProvider(rpcUrl),
-        config.indexer
+        config?.indexer
       ),
-    [address, wsUrl, rpcUrl, config.indexer]
+    [tokenAddress, wsRpcUrl, rpcUrl]
   );
 
   /**
