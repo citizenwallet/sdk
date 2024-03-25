@@ -1,6 +1,10 @@
 import { BaseApi } from "./api";
 import { randomCacheNumber } from "./utils";
 
+export interface ConfigCommunityTheme {
+  primary: string;
+}
+
 export interface ConfigCommunity {
   name: string;
   description: string;
@@ -9,6 +13,7 @@ export interface ConfigCommunity {
   logo: string;
   custom_domain?: string;
   hidden?: boolean;
+  theme?: ConfigCommunityTheme;
 }
 
 export interface ConfigToken {
@@ -36,6 +41,24 @@ export interface ConfigNode {
   ws_url: string;
 }
 
+export interface ConfigERC4337 {
+  rpc_url: string;
+  paymaster_address?: string;
+  entrypoint_address: string;
+  account_factory_address: string;
+  paymaster_rpc_url: string;
+  paymaster_type: string;
+  gas_extra_percentage?: number;
+}
+
+export interface ConfigIPFS {
+  url: string;
+}
+
+export interface ConfigProfile {
+  address: string;
+}
+
 export interface Config {
   community: {
     name: string;
@@ -48,23 +71,11 @@ export interface Config {
   };
   scan: ConfigScan;
   indexer: ConfigIndexer;
-  ipfs: {
-    url: string;
-  };
+  ipfs: ConfigIPFS;
   node: ConfigNode;
-  erc4337: {
-    rpc_url: string;
-    paymaster_address?: string;
-    entrypoint_address: string;
-    account_factory_address: string;
-    paymaster_rpc_url: string;
-    paymaster_type: string;
-    gas_extra_percentage?: number;
-  };
+  erc4337: ConfigERC4337;
   token: ConfigToken;
-  profile: {
-    address: string;
-  };
+  profile: ConfigProfile;
   plugins?: {
     name: string;
     icon: string;

@@ -37,7 +37,7 @@ export class ERC20ContractService {
     return this.contract.getFunction("name")();
   }
 
-  decimals(): Promise<number> {
+  decimals(): Promise<bigint> {
     return this.contract.getFunction("decimals")();
   }
 }
