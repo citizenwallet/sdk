@@ -60,7 +60,6 @@ export class ERC20Actions {
 
       this.store.getState().balanceSuccess(balance);
     } catch (error) {
-      console.log(error);
       this.store.getState().balanceFailed();
     }
   }
@@ -79,7 +78,6 @@ export class ERC20Actions {
 
       this.store.getState().metadataSuccess(symbol, name, decimals);
     } catch (error) {
-      console.log(error);
       this.store.getState().metadataFailed();
     }
   }

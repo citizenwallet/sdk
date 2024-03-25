@@ -14,12 +14,12 @@ export type ERC20Store = {
   metadata: {
     symbol: string;
     name: string;
-    decimals: number;
+    decimals: bigint;
     loading: boolean;
     error: boolean;
   };
   metadataRequest: () => void;
-  metadataSuccess: (symbol: string, name: string, decimals: number) => void;
+  metadataSuccess: (symbol: string, name: string, decimals: bigint) => void;
   metadataFailed: () => void;
   metadataClear: () => void;
   transfers: {
@@ -45,7 +45,7 @@ const getInitialState = () => ({
   metadata: {
     symbol: "",
     name: "",
-    decimals: 0,
+    decimals: BigInt(0),
     loading: false,
     error: false,
   },
@@ -76,7 +76,7 @@ export default createStore<ERC20Store>(
         set((state) => ({
           metadata: { ...state.metadata, loading: true, error: false },
         })),
-      metadataSuccess: (symbol: string, name: string, decimals: number) =>
+      metadataSuccess: (symbol: string, name: string, decimals: bigint) =>
         set({
           metadata: {
             symbol,
@@ -95,7 +95,7 @@ export default createStore<ERC20Store>(
           metadata: {
             symbol: "",
             name: "",
-            decimals: 0,
+            decimals: BigInt(0),
             loading: false,
             error: false,
           },
