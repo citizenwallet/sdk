@@ -49,7 +49,7 @@ describe("IOU", () => {
 
     const current = await time.latest();
 
-    await token.mint(owner.address, 100, "hello");
+    await token.mint(owner.address, 100);
 
     const erc20IOUActions = new ERC20IOUContractActions(
       await tokeniou.getAddress(),
