@@ -97,9 +97,16 @@ export class CommunityFactoryContractService {
     const priorityFeePerGas =
       maxPriorityFeePerGas + maxPriorityFeePerGas / BigInt(10);
 
+    // Increase the gas limit by a certain percentage
+    const gasLimit = await contract
+      .getFunction("create")
+      .estimateGas(owner, token, salt);
+    const increasedGasLimit = gasLimit + gasLimit / BigInt(5); // increase by 20%
+
     return contract.getFunction("create")(owner, token, salt, {
       maxFeePerGas: feePerGas,
       maxPriorityFeePerGas: priorityFeePerGas,
+      gasLimit: increasedGasLimit,
     });
   }
 
