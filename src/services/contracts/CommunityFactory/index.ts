@@ -85,7 +85,22 @@ export class CommunityFactoryContractService {
       CommunityFactoryAbi,
       this.sessionService.signer
     );
-    return contract.getFunction("create")(owner, token, salt);
+
+    const { maxFeePerGas, maxPriorityFeePerGas } =
+      await this.provider.getFeeData();
+
+    if (!maxFeePerGas || !maxPriorityFeePerGas) {
+      throw new Error("Gas fee data not available");
+    }
+
+    const feePerGas = maxFeePerGas + maxFeePerGas / BigInt(10);
+    const priorityFeePerGas =
+      maxPriorityFeePerGas + maxPriorityFeePerGas / BigInt(10);
+
+    return contract.getFunction("create")(owner, token, salt, {
+      maxFeePerGas: feePerGas,
+      maxPriorityFeePerGas: priorityFeePerGas,
+    });
   }
 
   async get(
