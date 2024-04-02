@@ -13,6 +13,17 @@ interface Networks {
 }
 
 export const NETWORKS: Networks = {
+  "100": {
+    chainId: 100,
+    name: "Gnosis",
+    symbol: "xDAI",
+    explorer: "https://gnosisscan.io",
+    rpcUrl:
+      "https://nd-316-960-830.p2pify.com/6358ba724050b705cede1d956917ce60",
+    wsRpcUrl:
+      "wss://ws-nd-316-960-830.p2pify.com/6358ba724050b705cede1d956917ce60",
+    communityFactoryAddress: "0x05e2Fb34b4548990F96B3ba422eA3EF49D5dAa99",
+  },
   "137": {
     chainId: 137,
     name: "Polygon",
