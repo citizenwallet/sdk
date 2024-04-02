@@ -88,7 +88,7 @@ export class CommunityFactoryContractService {
       this.sessionService.signer
     );
 
-    const { maxFeePerGas, maxPriorityFeePerGas } =
+    const { maxFeePerGas = BigInt(1), maxPriorityFeePerGas = BigInt(1) } =
       await this.provider.getFeeData();
 
     if (!maxFeePerGas || !maxPriorityFeePerGas) {
