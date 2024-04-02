@@ -98,8 +98,10 @@ export class CommunityFactoryContractService {
       maxPriorityFeePerGas + maxPriorityFeePerGas / BigInt(10);
 
     // Increase the gas limit by a certain percentage
-    const gasLimit = await this.estimateCreate(owner, token, salt);
-    const increasedGasLimit = gasLimit + gasLimit / BigInt(5); // increase by 20%
+    const gasUsage = await contract
+      .getFunction("create")
+      .estimateGas(owner, token, salt);
+    const increasedGasLimit = gasUsage + gasUsage / BigInt(5); // increase by 20%
 
     return contract.getFunction("create")(owner, token, salt, {
       maxFeePerGas: feePerGas,
