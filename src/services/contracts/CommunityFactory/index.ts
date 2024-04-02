@@ -72,7 +72,9 @@ export class CommunityFactoryContractService {
 
     const estimatedCost = gas * (maxFeePerGas || BigInt(1));
 
-    return estimatedCost + estimatedCost / BigInt(5);
+    const margin = estimatedCost / BigInt(2);
+
+    return estimatedCost + margin;
   }
 
   async create(
