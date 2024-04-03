@@ -55,6 +55,7 @@ export class CommunityFactoryContractService {
 
   async estimateCreate(
     owner: string,
+    sponsor: string,
     token: string,
     salt: number
   ): Promise<bigint> {
@@ -66,7 +67,7 @@ export class CommunityFactoryContractService {
 
     const gas = await contract
       .getFunction("create")
-      .estimateGas(owner, token, salt);
+      .estimateGas(owner, sponsor, token, salt);
 
     const { maxFeePerGas } = await this.provider.getFeeData();
 
@@ -79,6 +80,7 @@ export class CommunityFactoryContractService {
 
   async create(
     owner: string,
+    sponsor: string,
     token: string,
     salt: number
   ): Promise<TransactionResponse> {
@@ -102,10 +104,10 @@ export class CommunityFactoryContractService {
     // Increase the gas limit by a certain percentage
     const gasUsage = await contract
       .getFunction("create")
-      .estimateGas(owner, token, salt);
+      .estimateGas(owner, sponsor, token, salt);
     const increasedGasLimit = gasUsage + gasUsage / BigInt(5); // increase by 20%
 
-    return contract.getFunction("create")(owner, token, salt, {
+    return contract.getFunction("create")(owner, sponsor, token, salt, {
       maxFeePerGas: feePerGas,
       maxPriorityFeePerGas: priorityFeePerGas,
       gasLimit: increasedGasLimit,
@@ -114,6 +116,7 @@ export class CommunityFactoryContractService {
 
   async get(
     owner: string,
+    sponsor: string,
     token: string,
     salt: number
   ): Promise<[string, string, string, string]> {
@@ -122,6 +125,6 @@ export class CommunityFactoryContractService {
       CommunityFactoryAbi,
       this.sessionService.signer
     );
-    return contract.getFunction("get")(owner, token, salt);
+    return contract.getFunction("get")(owner, sponsor, token, salt);
   }
 }
