@@ -22,7 +22,7 @@ export const NETWORKS: Networks = {
       "https://nd-316-960-830.p2pify.com/6358ba724050b705cede1d956917ce60",
     wsRpcUrl:
       "wss://ws-nd-316-960-830.p2pify.com/6358ba724050b705cede1d956917ce60",
-    communityFactoryAddress: "0xEf101f609eb7CC1965F5e08047C6589bA1fccFF0",
+    communityFactoryAddress: "0xA5ce28808bAb4D4b2a7e6b6EAdd74c3883c25582",
   },
   "137": {
     chainId: 137,

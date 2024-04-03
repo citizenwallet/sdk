@@ -41,11 +41,17 @@ export class CommunityFactoryContractActions {
     this.store.getState().reset();
   }
 
-  async estimateAmountToPay(owner: string, token: string, salt: number) {
+  async estimateAmountToPay(
+    owner: string,
+    sponsor: string,
+    token: string,
+    salt: number
+  ) {
     try {
       this.store.getState().estimateCommunityFactoryGasRequest();
       const amount = await this.communityFactoryService.estimateCreate(
         owner,
+        sponsor,
         token,
         salt
       );
@@ -58,17 +64,23 @@ export class CommunityFactoryContractActions {
 
   async createCommunityFactory(
     owner: string,
+    sponsor: string,
     token: string,
     salt: number
   ): Promise<[string, string, string, string] | undefined> {
     try {
       this.store.getState().createRequest();
-      const tx = await this.communityFactoryService.create(owner, token, salt);
+      const tx = await this.communityFactoryService.create(
+        owner,
+        sponsor,
+        token,
+        salt
+      );
 
       await tx.wait();
 
       this.store.getState().createSuccess();
-      return this.communityFactoryService.get(owner, token, salt);
+      return this.communityFactoryService.get(owner, sponsor, token, salt);
     } catch (error) {
       this.store.getState().createFailed();
     }
@@ -76,11 +88,16 @@ export class CommunityFactoryContractActions {
     return;
   }
 
-  async getCommunityFactoryAddress(owner: string, token: string, salt: number) {
+  async getCommunityFactoryAddress(
+    owner: string,
+    sponsor: string,
+    token: string,
+    salt: number
+  ) {
     try {
       this.store.getState().getCommunityFactoryAddressRequest();
       const [tokenEntryPoint, paymaster, accountFactory, profile] =
-        await this.communityFactoryService.get(owner, token, salt);
+        await this.communityFactoryService.get(owner, sponsor, token, salt);
 
       this.store
         .getState()
