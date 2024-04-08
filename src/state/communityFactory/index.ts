@@ -15,13 +15,13 @@ export class CommunityFactoryContractActions {
 
   constructor(
     provider: JsonRpcProvider,
-    communityFactoryAddress: string,
+    network: Network,
     sessionService: SessionService
   ) {
     this.store = store;
 
     this.communityFactoryService = new CommunityFactoryContractService(
-      communityFactoryAddress,
+      network,
       provider,
       sessionService
     );
@@ -29,11 +29,11 @@ export class CommunityFactoryContractActions {
 
   updateProvider(
     provider: JsonRpcProvider,
-    communityFactoryAddress: string,
+    network: Network,
     sessionService: SessionService
   ) {
     this.communityFactoryService = new CommunityFactoryContractService(
-      communityFactoryAddress,
+      network,
       provider,
       sessionService
     );
@@ -120,7 +120,7 @@ export const useCommunityFactoryContract = (
   <T>(selector: communityFactoryStoreSelector<T>) => T,
   CommunityFactoryContractActions
 ] => {
-  const { rpcUrl, communityFactoryAddress } = network;
+  const { rpcUrl } = network;
 
   const firstLoadRef = useRef(true);
 
@@ -128,23 +128,23 @@ export const useCommunityFactoryContract = (
     () =>
       new CommunityFactoryContractActions(
         new JsonRpcProvider(rpcUrl),
-        communityFactoryAddress,
+        network,
         sessionService
       ),
-    [rpcUrl, communityFactoryAddress, sessionService]
+    [rpcUrl, network, sessionService]
   );
 
   useEffect(() => {
     if (!firstLoadRef.current) {
       configActions.updateProvider(
         new JsonRpcProvider(rpcUrl),
-        communityFactoryAddress,
+        network,
         sessionService
       );
     } else {
       firstLoadRef.current = false;
     }
-  }, [configActions, rpcUrl, communityFactoryAddress, sessionService]);
+  }, [configActions, rpcUrl, network, sessionService]);
 
   const useBoundStore = <T>(selector: communityFactoryStoreSelector<T>) =>
     useStore(configActions.store, selector);
