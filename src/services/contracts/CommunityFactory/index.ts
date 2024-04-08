@@ -39,18 +39,28 @@ export class CommunityFactoryContractService {
     this.sessionService = sessionService;
   }
 
-  async estimateContractFunction(
+  async estimateGasCost(
     contract: Contract,
     fnName: string,
-    ...args: ethers.ContractMethodArgs<any[]>
+    args: ethers.ContractMethodArgs<any[]>
   ): Promise<bigint> {
-    const gas = await contract.getFunction(fnName).estimateGas(args);
+    const gas = await contract.getFunction(fnName).estimateGas(...args);
 
     const { maxFeePerGas } = await this.provider.getFeeData();
 
     const estimatedCost = gas * (maxFeePerGas || BigInt(1));
 
     return estimatedCost + estimatedCost / BigInt(10);
+  }
+
+  async estimateGasAmount(
+    contract: Contract,
+    fnName: string,
+    args: ethers.ContractMethodArgs<any[]>
+  ): Promise<bigint> {
+    const gas = await contract.getFunction(fnName).estimateGas(...args);
+
+    return gas + gas / BigInt(10);
   }
 
   async estimateCreateWithDefaults(
@@ -65,16 +75,15 @@ export class CommunityFactoryContractService {
       this.sessionService.signer
     );
 
-    const [profile] = await profileContract.getFunction("get")(
+    const profile = await profileContract.getFunction("get")(
       wallet.address,
       salt
     );
 
-    const estimatedCost = await this.estimateContractFunction(
+    const estimatedCost = await this.estimateGasCost(
       profileContract,
       "create",
-      wallet.address,
-      salt
+      [wallet.address, salt]
     );
 
     const tepContract = new Contract(
@@ -83,14 +92,12 @@ export class CommunityFactoryContractService {
       this.sessionService.signer
     );
 
-    const estimatedCost1 = await this.estimateContractFunction(
-      tepContract,
-      "create",
+    const estimatedCost1 = await this.estimateGasCost(tepContract, "create", [
       wallet.address,
       wallet.address,
       [token, profile],
-      salt
-    );
+      salt,
+    ]);
 
     const affContract = new Contract(
       this.network.accountFactoryFactoryAddress,
@@ -105,13 +112,11 @@ export class CommunityFactoryContractService {
       salt
     );
 
-    const estimatedCost2 = await this.estimateContractFunction(
-      affContract,
-      "create",
+    const estimatedCost2 = await this.estimateGasCost(affContract, "create", [
       wallet.address,
       tokenEntryPoint, // intentionally using the wrong address, just for estimation
-      salt
-    );
+      salt,
+    ]);
 
     const creationCost = estimatedCost + estimatedCost1 + estimatedCost2;
 
@@ -136,7 +141,7 @@ export class CommunityFactoryContractService {
       this.sessionService.signer
     );
 
-    const [profile] = await profileContract.getFunction("get")(owner, salt);
+    const profile = await profileContract.getFunction("get")(owner, salt);
 
     const [tokenEntryPoint, _] = await tepfContract.getFunction("get")(
       owner,
@@ -145,21 +150,18 @@ export class CommunityFactoryContractService {
       salt
     );
 
-    const estimatedCost = await this.estimateContractFunction(
+    const estimatedCost = await this.estimateGasCost(
       profileContract,
       "create",
-      owner,
-      salt
+      [owner, salt]
     );
 
-    const estimatedCost1 = await this.estimateContractFunction(
-      tepfContract,
-      "create",
+    const estimatedCost1 = await this.estimateGasCost(tepfContract, "create", [
       owner,
       sponsor,
       [token, profile],
-      salt
-    );
+      salt,
+    ]);
 
     const affContract = new Contract(
       this.network.accountFactoryFactoryAddress,
@@ -167,13 +169,11 @@ export class CommunityFactoryContractService {
       this.sessionService.signer
     );
 
-    const estimatedCost2 = await this.estimateContractFunction(
-      affContract,
-      "create",
+    const estimatedCost2 = await this.estimateGasCost(affContract, "create", [
       owner,
       tokenEntryPoint, // intentionally using the wrong address, just for estimation
-      salt
-    );
+      salt,
+    ]);
 
     const creationCost = estimatedCost + estimatedCost1 + estimatedCost2;
 
@@ -204,7 +204,7 @@ export class CommunityFactoryContractService {
       this.sessionService.signer
     );
 
-    const [profile] = await profileContract.getFunction("get")(owner, salt);
+    const profile = await profileContract.getFunction("get")(owner, salt);
 
     const { maxFeePerGas = BigInt(1), maxPriorityFeePerGas = BigInt(1) } =
       await this.provider.getFeeData();
@@ -218,43 +218,56 @@ export class CommunityFactoryContractService {
       maxPriorityFeePerGas + maxPriorityFeePerGas / BigInt(10);
 
     // Increase the gas limit by a certain percentage
-    let gasUsage = await this.estimateContractFunction(
-      tepfContract,
-      "create",
+    let gasAmount = await this.estimateGasAmount(profileContract, "create", [
+      owner,
+      salt,
+    ]);
+
+    let txResponse: TransactionResponse = await profileContract.getFunction(
+      "create"
+    )(owner, salt, {
+      maxFeePerGas: feePerGas,
+      maxPriorityFeePerGas: priorityFeePerGas,
+      gasLimit: gasAmount,
+    });
+
+    await txResponse.wait();
+
+    // Increase the gas limit by a certain percentage
+    gasAmount = await this.estimateGasAmount(tepfContract, "create", [
       owner,
       sponsor,
       [token, profile],
-      salt
-    );
-    let increasedGasLimit = gasUsage + gasUsage / BigInt(5); // increase by 20%
+      salt,
+    ]);
 
-    let txResponse: TransactionResponse = await tepfContract.getFunction(
-      "create"
-    )(owner, sponsor, [token, profile], salt, {
-      maxFeePerGas: feePerGas,
-      maxPriorityFeePerGas: priorityFeePerGas,
-      gasLimit: increasedGasLimit,
-    });
+    txResponse = await tepfContract.getFunction("create")(
+      owner,
+      sponsor,
+      [token, profile],
+      salt,
+      {
+        maxFeePerGas: feePerGas,
+        maxPriorityFeePerGas: priorityFeePerGas,
+        gasLimit: gasAmount,
+      }
+    );
 
     await txResponse.wait();
 
     const [tokenEntryPoint, _] = await tepfContract.getFunction("get")(
       owner,
       sponsor,
-      token,
-      [],
+      [token, profile],
       salt
     );
 
     // Increase the gas limit by a certain percentage
-    gasUsage = await this.estimateContractFunction(
-      affContract,
-      "create",
+    gasAmount = await this.estimateGasAmount(affContract, "create", [
       owner,
       tokenEntryPoint,
-      salt
-    );
-    increasedGasLimit = gasUsage + gasUsage / BigInt(5); // increase by 20%
+      salt,
+    ]);
 
     txResponse = await affContract.getFunction("create")(
       owner,
@@ -263,26 +276,9 @@ export class CommunityFactoryContractService {
       {
         maxFeePerGas: feePerGas,
         maxPriorityFeePerGas: priorityFeePerGas,
-        gasLimit: increasedGasLimit,
+        gasLimit: gasAmount,
       }
     );
-
-    await txResponse.wait();
-
-    // Increase the gas limit by a certain percentage
-    gasUsage = await this.estimateContractFunction(
-      profileContract,
-      "create",
-      owner,
-      salt
-    );
-    increasedGasLimit = gasUsage + gasUsage / BigInt(5); // increase by 20%
-
-    txResponse = await profileContract.getFunction("create")(owner, salt, {
-      maxFeePerGas: feePerGas,
-      maxPriorityFeePerGas: priorityFeePerGas,
-      gasLimit: increasedGasLimit,
-    });
 
     return txResponse;
   }
@@ -293,13 +289,25 @@ export class CommunityFactoryContractService {
     token: string,
     salt: number
   ): Promise<[string, string, string, string]> {
+    const profileContract = new Contract(
+      this.network.profileFactoryAddress,
+      ProfileFactoryAbi,
+      this.sessionService.signer
+    );
+
     const tepfContract = new Contract(
       this.network.tokenEntryPointFactoryAddress,
       TokenEntryPointFactoryAbi,
       this.sessionService.signer
     );
 
-    const [profile] = await tepfContract.getFunction("get")(owner, salt);
+    const affContract = new Contract(
+      this.network.accountFactoryFactoryAddress,
+      AccountFactoryFactoryAbi,
+      this.sessionService.signer
+    );
+
+    const profile = await profileContract.getFunction("get")(owner, salt);
 
     const [tokenEntryPoint, paymaster] = await tepfContract.getFunction("get")(
       owner,
@@ -308,7 +316,7 @@ export class CommunityFactoryContractService {
       salt
     );
 
-    const [accountFactory] = await tepfContract.getFunction("get")(
+    const accountFactory = await affContract.getFunction("get")(
       owner,
       tokenEntryPoint,
       salt
