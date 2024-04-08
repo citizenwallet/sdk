@@ -60,15 +60,7 @@ export interface ConfigProfile {
 }
 
 export interface Config {
-  community: {
-    name: string;
-    description: string;
-    url: string;
-    alias: string;
-    logo: string;
-    customDomain?: string;
-    hidden?: boolean;
-  };
+  community: ConfigCommunity;
   scan: ConfigScan;
   indexer: ConfigIndexer;
   ipfs: ConfigIPFS;

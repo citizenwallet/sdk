@@ -5,7 +5,9 @@ export interface Network {
   explorer: string;
   rpcUrl: string;
   wsRpcUrl: string;
-  communityFactoryAddress: string;
+  tokenEntryPointFactoryAddress: string;
+  accountFactoryFactoryAddress: string;
+  profileFactoryAddress: string;
 }
 
 interface Networks {
@@ -22,7 +24,9 @@ export const NETWORKS: Networks = {
       "https://nd-316-960-830.p2pify.com/6358ba724050b705cede1d956917ce60",
     wsRpcUrl:
       "wss://ws-nd-316-960-830.p2pify.com/6358ba724050b705cede1d956917ce60",
-    communityFactoryAddress: "0xA5ce28808bAb4D4b2a7e6b6EAdd74c3883c25582",
+    tokenEntryPointFactoryAddress: "0x",
+    accountFactoryFactoryAddress: "0x",
+    profileFactoryAddress: "0x",
   },
   "137": {
     chainId: 137,
@@ -33,7 +37,9 @@ export const NETWORKS: Networks = {
       "https://nd-147-012-483.p2pify.com/d8ba4ac942ec62a14e0cc844d373d9d2",
     wsRpcUrl:
       "wss://ws-nd-147-012-483.p2pify.com/d8ba4ac942ec62a14e0cc844d373d9d2",
-    communityFactoryAddress: "0x07aC4b41a8713aAf8137Ed1388ef7f986D01cea6",
+    tokenEntryPointFactoryAddress: "0x",
+    accountFactoryFactoryAddress: "0x",
+    profileFactoryAddress: "0x",
   },
   "8453": {
     chainId: 8453,
@@ -44,7 +50,9 @@ export const NETWORKS: Networks = {
       "https://nd-231-060-478.p2pify.com/1200e5d6ce27d6e7cd61ab0567a9927e",
     wsRpcUrl:
       "wss://ws-nd-231-060-478.p2pify.com/1200e5d6ce27d6e7cd61ab0567a9927e",
-    communityFactoryAddress: "0x1EaF6B6A6967608aF6c77224f087b042095891EB",
+    tokenEntryPointFactoryAddress: "0x",
+    accountFactoryFactoryAddress: "0x",
+    profileFactoryAddress: "0x",
   },
   "84532": {
     chainId: 84532,
@@ -53,7 +61,9 @@ export const NETWORKS: Networks = {
     explorer: "https://sepolia.basescan.org/",
     rpcUrl: "https://base-sepolia-rpc.publicnode.com",
     wsRpcUrl: "wss://base-sepolia-rpc.publicnode.com",
-    communityFactoryAddress: "0x35fbB23DEf6346Afa686742B3B39105E0561Fc82",
+    tokenEntryPointFactoryAddress: "0x",
+    accountFactoryFactoryAddress: "0x",
+    profileFactoryAddress: "0x",
   },
   "42220": {
     chainId: 42220,
@@ -64,7 +74,9 @@ export const NETWORKS: Networks = {
       "https://powerful-bold-lake.celo-mainnet.discover.quiknode.pro/90b75be007c48ab0af5c36c702116f5d863e65dc",
     wsRpcUrl:
       "wss://powerful-bold-lake.celo-mainnet.discover.quiknode.pro/90b75be007c48ab0af5c36c702116f5d863e65dc",
-    communityFactoryAddress: "0xbAbabCF5e6459c224B0625A29306c9DE7A593542",
+    tokenEntryPointFactoryAddress: "0xc67FaCF0B8aF24a61E9D8c333eE379Bb5CEB8254",
+    accountFactoryFactoryAddress: "0xA8bdE712d757d6b66E2849c00200F5C87AD3d3e6",
+    profileFactoryAddress: "0x0fdB64Edf227e1DACb340b6f60E52cC3d678097d",
   },
   "44787": {
     chainId: 44787,
@@ -73,6 +85,8 @@ export const NETWORKS: Networks = {
     explorer: "https://alfajores.celoscan.io",
     rpcUrl: "https://rpc-mainnet.maticvigil.com",
     wsRpcUrl: "wss://rpc-mainnet.maticvigil.com/ws",
-    communityFactoryAddress: "0x6b3a1f4277391526413F583c23D5B9EF4d2fE986",
+    tokenEntryPointFactoryAddress: "0x",
+    accountFactoryFactoryAddress: "0x",
+    profileFactoryAddress: "0x",
   },
 };

@@ -6,45 +6,45 @@ import {
   ethers,
 } from "ethers";
 
-import CommunityFactoryAbi from "smartcontracts/build/contracts/communityFactory/CommunityFactory.abi.json";
+import TokenEntryPointFactoryAbi from "smartcontracts/build/contracts/tokenEntryPointFactory/TokenEntryPointFactory.abi.json";
+import AccountFactoryFactoryAbi from "smartcontracts/build/contracts/accountFactoryFactory/AccountFactoryFactory.abi.json";
+import ProfileFactoryAbi from "smartcontracts/build/contracts/profileFactory/ProfileFactory.abi.json";
 import { SessionService } from "../../session";
+import { Network } from "../../../constants/networks";
 
-export const communityFactory = new ethers.Interface(CommunityFactoryAbi);
+export const tokenEntryPointFactory = new ethers.Interface(
+  TokenEntryPointFactoryAbi
+);
+export const accountFactoryFactory = new ethers.Interface(
+  AccountFactoryFactoryAbi
+);
+export const profileFactory = new ethers.Interface(ProfileFactoryAbi);
 
 export class CommunityFactoryContractService {
   /**
    * The contract instance.
    */
-  contractAddress: string;
+  network: Network;
   provider: WebSocketProvider | JsonRpcProvider;
   sessionService: SessionService;
   // contract: Contract;
 
   constructor(
-    contractAddress: string,
+    network: Network,
     provider: WebSocketProvider | JsonRpcProvider,
     sessionService: SessionService
   ) {
-    this.contractAddress = contractAddress;
+    this.network = network;
     this.provider = provider;
     this.sessionService = sessionService;
   }
 
-  async estimateCreateWithDefaults(
-    token: string,
-    salt: number
+  async estimateContractFunction(
+    contract: Contract,
+    fnName: string,
+    ...args: ethers.ContractMethodArgs<any[]>
   ): Promise<bigint> {
-    const wallet = ethers.Wallet.createRandom();
-
-    const contract = new Contract(
-      this.contractAddress,
-      CommunityFactoryAbi,
-      this.sessionService.signer
-    );
-
-    const gas = await contract
-      .getFunction("create")
-      .estimateGas(wallet.address, token, salt);
+    const gas = await contract.getFunction(fnName).estimateGas(args);
 
     const { maxFeePerGas } = await this.provider.getFeeData();
 
@@ -53,29 +53,131 @@ export class CommunityFactoryContractService {
     return estimatedCost + estimatedCost / BigInt(10);
   }
 
+  async estimateCreateWithDefaults(
+    token: string,
+    salt: number
+  ): Promise<bigint> {
+    const wallet = ethers.Wallet.createRandom();
+
+    const profileContract = new Contract(
+      this.network.profileFactoryAddress,
+      ProfileFactoryAbi,
+      this.sessionService.signer
+    );
+
+    const [profile] = await profileContract.getFunction("get")(
+      wallet.address,
+      salt
+    );
+
+    const estimatedCost = await this.estimateContractFunction(
+      profileContract,
+      "create",
+      wallet.address,
+      salt
+    );
+
+    const tepContract = new Contract(
+      this.network.tokenEntryPointFactoryAddress,
+      TokenEntryPointFactoryAbi,
+      this.sessionService.signer
+    );
+
+    const estimatedCost1 = await this.estimateContractFunction(
+      tepContract,
+      "create",
+      wallet.address,
+      wallet.address,
+      [token, profile],
+      salt
+    );
+
+    const affContract = new Contract(
+      this.network.accountFactoryFactoryAddress,
+      AccountFactoryFactoryAbi,
+      this.sessionService.signer
+    );
+
+    const [tokenEntryPoint, _] = await tepContract.getFunction("get")(
+      wallet.address,
+      wallet.address,
+      [token, profile],
+      salt
+    );
+
+    const estimatedCost2 = await this.estimateContractFunction(
+      affContract,
+      "create",
+      wallet.address,
+      tokenEntryPoint, // intentionally using the wrong address, just for estimation
+      salt
+    );
+
+    const creationCost = estimatedCost + estimatedCost1 + estimatedCost2;
+
+    return creationCost + creationCost / BigInt(10); // extra margin + whitelist call
+  }
+
   async estimateCreate(
     owner: string,
     sponsor: string,
     token: string,
     salt: number
   ): Promise<bigint> {
-    const contract = new Contract(
-      this.contractAddress,
-      CommunityFactoryAbi,
+    const tepfContract = new Contract(
+      this.network.tokenEntryPointFactoryAddress,
+      TokenEntryPointFactoryAbi,
       this.sessionService.signer
     );
 
-    const gas = await contract
-      .getFunction("create")
-      .estimateGas(owner, sponsor, token, salt);
+    const profileContract = new Contract(
+      this.network.profileFactoryAddress,
+      ProfileFactoryAbi,
+      this.sessionService.signer
+    );
 
-    const { maxFeePerGas } = await this.provider.getFeeData();
+    const [profile] = await profileContract.getFunction("get")(owner, salt);
 
-    const estimatedCost = gas * (maxFeePerGas || BigInt(1));
+    const [tokenEntryPoint, _] = await tepfContract.getFunction("get")(
+      owner,
+      sponsor,
+      [token, profile],
+      salt
+    );
 
-    const margin = estimatedCost / BigInt(2);
+    const estimatedCost = await this.estimateContractFunction(
+      profileContract,
+      "create",
+      owner,
+      salt
+    );
 
-    return estimatedCost + margin;
+    const estimatedCost1 = await this.estimateContractFunction(
+      tepfContract,
+      "create",
+      owner,
+      sponsor,
+      [token, profile],
+      salt
+    );
+
+    const affContract = new Contract(
+      this.network.accountFactoryFactoryAddress,
+      AccountFactoryFactoryAbi,
+      this.sessionService.signer
+    );
+
+    const estimatedCost2 = await this.estimateContractFunction(
+      affContract,
+      "create",
+      owner,
+      tokenEntryPoint, // intentionally using the wrong address, just for estimation
+      salt
+    );
+
+    const creationCost = estimatedCost + estimatedCost1 + estimatedCost2;
+
+    return creationCost + creationCost / BigInt(10); // extra margin + whitelist call
   }
 
   async create(
@@ -84,11 +186,25 @@ export class CommunityFactoryContractService {
     token: string,
     salt: number
   ): Promise<TransactionResponse> {
-    const contract = new Contract(
-      this.contractAddress,
-      CommunityFactoryAbi,
+    const tepfContract = new Contract(
+      this.network.tokenEntryPointFactoryAddress,
+      TokenEntryPointFactoryAbi,
       this.sessionService.signer
     );
+
+    const affContract = new Contract(
+      this.network.accountFactoryFactoryAddress,
+      AccountFactoryFactoryAbi,
+      this.sessionService.signer
+    );
+
+    const profileContract = new Contract(
+      this.network.profileFactoryAddress,
+      ProfileFactoryAbi,
+      this.sessionService.signer
+    );
+
+    const [profile] = await profileContract.getFunction("get")(owner, salt);
 
     const { maxFeePerGas = BigInt(1), maxPriorityFeePerGas = BigInt(1) } =
       await this.provider.getFeeData();
@@ -102,16 +218,73 @@ export class CommunityFactoryContractService {
       maxPriorityFeePerGas + maxPriorityFeePerGas / BigInt(10);
 
     // Increase the gas limit by a certain percentage
-    const gasUsage = await contract
-      .getFunction("create")
-      .estimateGas(owner, sponsor, token, salt);
-    const increasedGasLimit = gasUsage + gasUsage / BigInt(5); // increase by 20%
+    let gasUsage = await this.estimateContractFunction(
+      tepfContract,
+      "create",
+      owner,
+      sponsor,
+      [token, profile],
+      salt
+    );
+    let increasedGasLimit = gasUsage + gasUsage / BigInt(5); // increase by 20%
 
-    return contract.getFunction("create")(owner, sponsor, token, salt, {
+    let txResponse: TransactionResponse = await tepfContract.getFunction(
+      "create"
+    )(owner, sponsor, [token, profile], salt, {
       maxFeePerGas: feePerGas,
       maxPriorityFeePerGas: priorityFeePerGas,
       gasLimit: increasedGasLimit,
     });
+
+    await txResponse.wait();
+
+    const [tokenEntryPoint, _] = await tepfContract.getFunction("get")(
+      owner,
+      sponsor,
+      token,
+      [],
+      salt
+    );
+
+    // Increase the gas limit by a certain percentage
+    gasUsage = await this.estimateContractFunction(
+      affContract,
+      "create",
+      owner,
+      tokenEntryPoint,
+      salt
+    );
+    increasedGasLimit = gasUsage + gasUsage / BigInt(5); // increase by 20%
+
+    txResponse = await affContract.getFunction("create")(
+      owner,
+      tokenEntryPoint,
+      salt,
+      {
+        maxFeePerGas: feePerGas,
+        maxPriorityFeePerGas: priorityFeePerGas,
+        gasLimit: increasedGasLimit,
+      }
+    );
+
+    await txResponse.wait();
+
+    // Increase the gas limit by a certain percentage
+    gasUsage = await this.estimateContractFunction(
+      profileContract,
+      "create",
+      owner,
+      salt
+    );
+    increasedGasLimit = gasUsage + gasUsage / BigInt(5); // increase by 20%
+
+    txResponse = await profileContract.getFunction("create")(owner, salt, {
+      maxFeePerGas: feePerGas,
+      maxPriorityFeePerGas: priorityFeePerGas,
+      gasLimit: increasedGasLimit,
+    });
+
+    return txResponse;
   }
 
   async get(
@@ -120,11 +293,27 @@ export class CommunityFactoryContractService {
     token: string,
     salt: number
   ): Promise<[string, string, string, string]> {
-    const contract = new Contract(
-      this.contractAddress,
-      CommunityFactoryAbi,
+    const tepfContract = new Contract(
+      this.network.tokenEntryPointFactoryAddress,
+      TokenEntryPointFactoryAbi,
       this.sessionService.signer
     );
-    return contract.getFunction("get")(owner, sponsor, token, salt);
+
+    const [profile] = await tepfContract.getFunction("get")(owner, salt);
+
+    const [tokenEntryPoint, paymaster] = await tepfContract.getFunction("get")(
+      owner,
+      sponsor,
+      [token, profile],
+      salt
+    );
+
+    const [accountFactory] = await tepfContract.getFunction("get")(
+      owner,
+      tokenEntryPoint,
+      salt
+    );
+
+    return [tokenEntryPoint, paymaster, accountFactory, profile];
   }
 }
