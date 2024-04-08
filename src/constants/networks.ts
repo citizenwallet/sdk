@@ -21,9 +21,9 @@ export const NETWORKS: Networks = {
     symbol: "xDAI",
     explorer: "https://gnosisscan.io",
     rpcUrl:
-      "https://nd-316-960-830.p2pify.com/6358ba724050b705cede1d956917ce60",
+      "https://nd-186-204-791.p2pify.com/e5512c5ca6fba9a6a20ccbbb8960799f",
     wsRpcUrl:
-      "wss://ws-nd-316-960-830.p2pify.com/6358ba724050b705cede1d956917ce60",
+      "wss://ws-nd-186-204-791.p2pify.com/e5512c5ca6fba9a6a20ccbbb8960799f",
     tokenEntryPointFactoryAddress: "0x",
     accountFactoryFactoryAddress: "0x",
     profileFactoryAddress: "0x",
