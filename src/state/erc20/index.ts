@@ -171,6 +171,8 @@ export class ERC20Actions {
         (!selfCall && this.isListening[address])
       ) {
         this.isListening[address] = false;
+
+        await delay(fetchInterval);
         return;
       }
       this.isListening[address] = true;
@@ -197,6 +199,7 @@ export class ERC20Actions {
       return this.listenForTransfers(address, fetchInterval, true);
     } catch (error) {
       //
+      await delay(fetchInterval);
     }
   }
 
@@ -230,7 +233,7 @@ export const useERC20 = (
         new JsonRpcProvider(rpcUrl),
         config?.indexer
       ),
-    [tokenAddress, wsRpcUrl, rpcUrl]
+    [tokenAddress, wsRpcUrl, rpcUrl, config]
   );
 
   /**
