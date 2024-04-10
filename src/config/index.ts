@@ -1,10 +1,10 @@
 export const CONFIG_BASE_URL = "https://config.internal.citizenwallet.xyz";
 
 export const FaucetFactories: { [key: string]: string } = {
-  "42220": "0xAE76B1C6818c1DD81E20ccefD3e72B773068ABc9",
-  "137": "0xcF51C007E829b0080f5D3bC397C36993dC210856",
-  "8453": "0x5cC010B9e02Ff807F78b8A18C8aC02019b6F90EB",
-  "100": "0x1D7546BA232Bd5A0A240f2962d5a3f622aBB56F1",
+  "42220": "0xb7Ae7De72a64969D73A94382044bE718F7689F21",
+  "137": "0xA75763a9CBBAed9870CBfE5562ed5F0172A69953",
+  "8453": "0x04C06b9579b4f0C3ca65A35aabFf03BD9622279C",
+  "100": "0x944EDEc373b18B8329779F20C6Fd9baf6CB79c81",
 };
 
 export const VoucherFactories: { [key: string]: string } = {
