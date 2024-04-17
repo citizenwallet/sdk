@@ -71,9 +71,9 @@ export const NETWORKS: Networks = {
     symbol: "CELO",
     explorer: "https://celoscan.io",
     rpcUrl:
-      "https://powerful-bold-lake.celo-mainnet.discover.quiknode.pro/90b75be007c48ab0af5c36c702116f5d863e65dc",
+      "https://stylish-floral-morning.celo-mainnet.quiknode.pro/1de8e39f6e2189f62b565360b05569f33d40801d",
     wsRpcUrl:
-      "wss://powerful-bold-lake.celo-mainnet.discover.quiknode.pro/90b75be007c48ab0af5c36c702116f5d863e65dc",
+      "wss://stylish-floral-morning.celo-mainnet.quiknode.pro/1de8e39f6e2189f62b565360b05569f33d40801d",
     tokenEntryPointFactoryAddress: "0xc67FaCF0B8aF24a61E9D8c333eE379Bb5CEB8254",
     accountFactoryFactoryAddress: "0xA8bdE712d757d6b66E2849c00200F5C87AD3d3e6",
     profileFactoryAddress: "0x0fdB64Edf227e1DACb340b6f60E52cC3d678097d",
