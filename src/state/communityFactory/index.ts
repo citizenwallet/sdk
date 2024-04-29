@@ -45,7 +45,7 @@ export class CommunityFactoryContractActions {
     owner: string,
     sponsor: string,
     token: string,
-    salt: number
+    salt: bigint
   ) {
     try {
       this.store.getState().estimateCommunityFactoryGasRequest();
@@ -66,7 +66,7 @@ export class CommunityFactoryContractActions {
     owner: string,
     sponsor: string,
     token: string,
-    salt: number
+    salt: bigint
   ): Promise<[string, string, string, string] | undefined> {
     try {
       this.store.getState().createRequest();
@@ -92,7 +92,7 @@ export class CommunityFactoryContractActions {
     owner: string,
     sponsor: string,
     token: string,
-    salt: number
+    salt: bigint
   ) {
     try {
       this.store.getState().getCommunityFactoryAddressRequest();
