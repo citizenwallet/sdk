@@ -65,7 +65,7 @@ export class CommunityFactoryContractService {
 
   async estimateCreateWithDefaults(
     token: string,
-    salt: number
+    salt: bigint
   ): Promise<bigint> {
     const wallet = ethers.Wallet.createRandom();
 
@@ -127,7 +127,7 @@ export class CommunityFactoryContractService {
     owner: string,
     sponsor: string,
     token: string,
-    salt: number
+    salt: bigint
   ): Promise<bigint> {
     const tepfContract = new Contract(
       this.network.tokenEntryPointFactoryAddress,
@@ -184,7 +184,7 @@ export class CommunityFactoryContractService {
     owner: string,
     sponsor: string,
     token: string,
-    salt: number
+    salt: bigint
   ): Promise<TransactionResponse> {
     const tepfContract = new Contract(
       this.network.tokenEntryPointFactoryAddress,
@@ -287,7 +287,7 @@ export class CommunityFactoryContractService {
     owner: string,
     sponsor: string,
     token: string,
-    salt: number
+    salt: bigint
   ): Promise<[string, string, string, string]> {
     const profileContract = new Contract(
       this.network.profileFactoryAddress,
