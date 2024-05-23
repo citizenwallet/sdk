@@ -113,4 +113,24 @@ export class IndexerService {
     });
     return resp.json();
   }
+
+  async getAllNewTransfers(
+    tokenAddress: string,
+    params?: PaginationParams & NewTransfersQueryParams
+  ): Promise<ArrayResponse<Transfer, IndexerResponsePaginationMetadata>> {
+    let url = `${this.url}/logs/v2/transfers/${tokenAddress}/new`;
+
+    if (params) {
+      url += `?limit=${params.limit}&offset=${params.offset}`;
+
+      if (params.fromDate) {
+        url += `&fromDate=${params.fromDate}`;
+      }
+    }
+
+    const resp = await fetch(url, {
+      headers: { Authorization: `Bearer ${this.key}` },
+    });
+    return resp.json();
+  }
 }
