@@ -1,7 +1,7 @@
 import { BaseConfigApiService, Config } from "../../../src/services/api/config";
 import { delay } from "../../../src/utils/delay";
 
-const getMockConfigs: () => Config[] = () => [
+export const getMockConfigs: () => Config[] = () => [
   {
     community: {
       name: "Community 1",
@@ -52,6 +52,51 @@ const getMockConfigs: () => Config[] = () => [
       description: "This is the second mock community",
       url: "https://community2.com",
       alias: "community2",
+      logo: "https://community2.com/logo.png",
+    },
+    scan: {
+      url: "https://scan2.com",
+      name: "Scan 2",
+    },
+    indexer: {
+      url: "https://indexer2.com",
+      ipfs_url: "https://ipfs2.com",
+      key: "key2",
+    },
+    ipfs: {
+      url: "https://ipfs2.com",
+    },
+    node: {
+      chain_id: 2,
+      url: "https://node2.com",
+      ws_url: "wss://node2.com",
+    },
+    erc4337: {
+      rpc_url: "https://rpc2.com",
+      entrypoint_address: "0xdef",
+      account_factory_address: "0xghi",
+      paymaster_rpc_url: "https://paymasterrpc2.com",
+      paymaster_type: "type2",
+    },
+    token: {
+      address: "0xjkl",
+      standard: "ERC20",
+      name: "Token 2",
+      symbol: "TOK2",
+      decimals: 18,
+    },
+    profile: {
+      address: "0xmno",
+    },
+    version: 1,
+  },
+  {
+    community: {
+      name: "Community 3",
+      description: "This is the second mock community",
+      url: "https://community2.com",
+      alias: "community2",
+      custom_domain: "https://custom.com",
       logo: "https://community2.com/logo.png",
     },
     scan: {
