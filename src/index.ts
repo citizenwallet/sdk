@@ -43,6 +43,7 @@ export { SimpleFaucetContractService } from "./services/contracts/SimpleFaucet";
 export { ConfigActions, useConfig } from "./state/config";
 export { ConfigService } from "./services/config";
 export * from "./services/api/config";
+export * from "./services/config/utils";
 
 // Checkout
 export { CheckoutActions, useCheckout } from "./state/checkout";

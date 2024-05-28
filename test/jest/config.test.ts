@@ -26,7 +26,7 @@ describe("Config", () => {
   it("get all configs", async () => {
     const configs = await configService.get();
 
-    expect(configs.length).toBe(2);
+    expect(configs.length).toBe(3);
   });
 
   it("get a config using a slug with the store", async () => {
@@ -60,7 +60,7 @@ describe("Config", () => {
     expect(newState.loading).toBe(false);
     expect(newState.error).toBe(false);
     expect(newState.configs).not.toBe(undefined);
-    expect(newState.configs?.length).toBe(2);
+    expect(newState.configs?.length).toBe(3);
   });
 
   it("fail to get with the wrong slug with the store", async () => {
