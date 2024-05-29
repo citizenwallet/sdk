@@ -18,6 +18,10 @@ export { ERC20IOUContractActions, useIOUContract } from "./state/iou";
 export { IOUContractService } from "./services/contracts/IOU";
 export { getLocalIOUHash, getSignedHash } from "./services/contracts/IOU/utils";
 
+// Profiles
+export * from "./services/profile";
+export * from "./services/contracts/Profile";
+
 // FaucetFactory
 export {
   FaucetFactoryContractActions,
