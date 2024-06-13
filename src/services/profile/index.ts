@@ -1,7 +1,8 @@
-import { JsonRpcProvider } from "ethers";
+import { JsonRpcProvider, WebSocketProvider } from "ethers";
 import { Api } from "../api/api";
 import { Config } from "../api/config";
 import { ProfileContractService } from "../contracts/Profile";
+import { createWebSocketProvider } from "../wsprovider";
 
 export interface Profile {
   account: string;
@@ -16,6 +17,9 @@ export interface Profile {
 export class ProfileService {
   private profileContract: ProfileContractService;
   private ipfsAPI: Api;
+  wsUrl: string;
+
+  provider?: WebSocketProvider;
 
   constructor(config: Config) {
     const provider = new JsonRpcProvider(config.node.url);
@@ -24,9 +28,10 @@ export class ProfileService {
       provider
     );
     this.ipfsAPI = new Api(config.ipfs.url);
+    this.wsUrl = config.node.ws_url;
   }
 
-  getFromIPFS = async (hash: string) => {
+  getFromIPFS = async (hash: string): Promise<Profile> => {
     return await this.ipfsAPI.get(`/${hash.replace("ipfs://", "")}`);
   };
 
@@ -47,4 +52,38 @@ export class ProfileService {
       return null;
     }
   };
+
+  onProfileUpdate = async (callback: (profile: Profile) => void) => {
+    try {
+      this.stopProfileListener();
+
+      this.provider = createWebSocketProvider(this.wsUrl);
+      this.profileContract.contract.on(
+        "MetadataUpdate",
+        async (tokenId: BigInt) => {
+          try {
+            const ipfsHash = await this.profileContract.getFromTokenId(tokenId);
+
+            const profile = await this.getFromIPFS(ipfsHash);
+
+            callback(profile);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      );
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
+
+  async stopProfileListener() {
+    this.safeDestroyProvider();
+  }
+
+  private safeDestroyProvider() {
+    try {
+      this.provider?.destroy();
+    } catch (error) {}
+  }
 }
