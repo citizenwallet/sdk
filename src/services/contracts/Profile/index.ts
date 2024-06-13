@@ -22,4 +22,8 @@ export class ProfileContractService {
     const encoded = encodeBytes32String(username);
     return this.contract.getFunction("getFromUsername")(encoded);
   }
+
+  getFromTokenId(tokenId: BigInt): Promise<string> {
+    return this.contract.getFunction("tokenURI")(tokenId);
+  }
 }
