@@ -1,13 +1,15 @@
-import { JsonRpcProvider, ethers } from "ethers";
+import { JsonRpcProvider, encodeBytes32String, ethers } from "ethers";
 import tokenEntryPointContractAbi from "smartcontracts/build/contracts/tokenEntryPoint/TokenEntryPoint.abi.json";
 import accountFactoryContractAbi from "smartcontracts/build/contracts/accfactory/AccountFactory.abi.json";
 import accountContractAbi from "smartcontracts/build/contracts/account/Account.abi.json";
 import tokenContractAbi from "smartcontracts/build/contracts/erc20/ERC20.abi.json";
+import profileContractAbi from "smartcontracts/build/contracts/profile/Profile.abi.json";
 import { Config } from "../api/config";
 
 const accountFactoryInterface = new ethers.Interface(accountFactoryContractAbi);
 const accountInterface = new ethers.Interface(accountContractAbi);
 const erc20Token = new ethers.Interface(tokenContractAbi);
+const profileInterface = new ethers.Interface(profileContractAbi);
 
 interface UserOpExtraData {
   description: string;
@@ -62,6 +64,25 @@ const transferCallData = (
       erc20Token.encodeFunctionData("transfer", [receiver, amount]),
     ])
   );
+
+const profileCallData = (
+  profileContractAddress: string,
+  profileAccountAddress: string,
+  username: string,
+  ipfsHash: string
+) => {
+  return ethers.getBytes(
+    accountInterface.encodeFunctionData("execute", [
+      profileContractAddress,
+      BigInt(0),
+      profileInterface.encodeFunctionData("set", [
+        profileAccountAddress,
+        encodeBytes32String(username),
+        ipfsHash,
+      ]),
+    ])
+  );
+};
 
 const approveCallData = (
   tokenAddress: string,
@@ -330,6 +351,42 @@ export class BundlerService {
       userop,
       description !== undefined ? { description } : undefined
     );
+
+    return userop;
+  }
+
+  async setProfile(
+    signer: ethers.Signer,
+    signerAccountAddress: string,
+    profileAccountAddress: string,
+    username: string,
+    ipfsHash: string
+  ): Promise<UserOp> {
+    const calldata = profileCallData(
+      this.config.profile.address,
+      profileAccountAddress,
+      username,
+      ipfsHash
+    );
+
+    const owner = await signer.getAddress();
+
+    let userop = await this.prepareUserOp(
+      owner,
+      signerAccountAddress,
+      calldata
+    );
+
+    // get the paymaster to sign the userop
+    userop = await this.paymasterSignUserOp(userop);
+
+    // sign the userop
+    const signature = await this.signUserOp(signer, userop);
+
+    userop.signature = signature;
+
+    // submit the user op
+    await this.submitUserOp(userop);
 
     return userop;
   }
