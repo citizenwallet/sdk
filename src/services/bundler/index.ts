@@ -280,13 +280,13 @@ export class BundlerService {
       params.push(extraData);
     }
 
-    const response = await this.bundlerProvider.send(method, params);
+    const response: string = await this.bundlerProvider.send(method, params);
 
     if (!response?.length) {
       throw new Error("Invalid response");
     }
 
-    return userop;
+    return response;
   }
 
   async submit(
@@ -326,7 +326,7 @@ export class BundlerService {
     to: string,
     amount: string,
     description?: string
-  ): Promise<UserOp> {
+  ): Promise<string> {
     const formattedAmount = ethers.parseUnits(
       amount,
       this.config.token.decimals
@@ -347,12 +347,12 @@ export class BundlerService {
     userop.signature = signature;
 
     // submit the user op
-    await this.submitUserOp(
+    const hash = await this.submitUserOp(
       userop,
       description !== undefined ? { description } : undefined
     );
 
-    return userop;
+    return hash;
   }
 
   async setProfile(
@@ -361,7 +361,7 @@ export class BundlerService {
     profileAccountAddress: string,
     username: string,
     ipfsHash: string
-  ): Promise<UserOp> {
+  ): Promise<string> {
     const calldata = profileCallData(
       this.config.profile.address,
       profileAccountAddress,
@@ -386,8 +386,8 @@ export class BundlerService {
     userop.signature = signature;
 
     // submit the user op
-    await this.submitUserOp(userop);
+    const hash = await this.submitUserOp(userop);
 
-    return userop;
+    return hash;
   }
 }
