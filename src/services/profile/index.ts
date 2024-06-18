@@ -14,10 +14,33 @@ export interface Profile {
   username: string;
 }
 
+const formatProfileImageLinks = (ipfsUrl: string, profile: Profile) => {
+  if (profile.image_small.startsWith("ipfs://")) {
+    profile.image_small = `${ipfsUrl}/${profile.image_small.replace(
+      "ipfs://",
+      ""
+    )}`;
+  }
+
+  if (profile.image_medium.startsWith("ipfs://")) {
+    profile.image_medium = `${ipfsUrl}/${profile.image_medium.replace(
+      "ipfs://",
+      ""
+    )}`;
+  }
+
+  if (profile.image.startsWith("ipfs://")) {
+    profile.image = `${ipfsUrl}/${profile.image.replace("ipfs://", "")}`;
+  }
+
+  return profile;
+};
+
 export class ProfileService {
   private profileContract: ProfileContractService;
   private ipfsAPI: Api;
   wsUrl: string;
+  ipfsUrl: string;
 
   provider?: WebSocketProvider;
 
@@ -29,6 +52,7 @@ export class ProfileService {
     );
     this.ipfsAPI = new Api(config.ipfs.url);
     this.wsUrl = config.node.ws_url;
+    this.ipfsUrl = config.ipfs.url;
   }
 
   getFromIPFS = async (hash: string): Promise<Profile> => {
@@ -38,7 +62,10 @@ export class ProfileService {
   getProfile = async (account: string) => {
     try {
       const ipfsHash = await this.profileContract.get(account);
-      return await this.getFromIPFS(ipfsHash);
+
+      const profile = await this.getFromIPFS(ipfsHash);
+
+      return formatProfileImageLinks(this.ipfsUrl, profile);
     } catch (e) {
       return null;
     }
@@ -47,7 +74,10 @@ export class ProfileService {
   getProfileFromUsername = async (username: string) => {
     try {
       const ipfsHash = await this.profileContract.getFromUsername(username);
-      return await this.getFromIPFS(ipfsHash);
+
+      const profile = await this.getFromIPFS(ipfsHash);
+
+      return formatProfileImageLinks(this.ipfsUrl, profile);
     } catch (e) {
       return null;
     }
@@ -66,7 +96,7 @@ export class ProfileService {
 
             const profile = await this.getFromIPFS(ipfsHash);
 
-            callback(profile);
+            callback(formatProfileImageLinks(this.ipfsUrl, profile));
           } catch (error) {
             console.error(error);
           }
