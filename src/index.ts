@@ -63,6 +63,7 @@ export { ERC20ContractService } from "./services/contracts/ERC20";
 // Hooks
 export { useSafeEffect } from "./hooks/useSafeEffect";
 export { useScrollableElementFetcher } from "./hooks/useScrollableElementFetcher";
+export { useScrollableWindowFetcher } from "./hooks/useScrollableWindowFetcher";
 
 // Constants
 export * from "./constants/networks";
