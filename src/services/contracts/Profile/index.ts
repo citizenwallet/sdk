@@ -7,7 +7,7 @@ import {
 } from "ethers";
 
 import ProfileAbi from "smartcontracts/build/contracts/profile/Profile.abi.json";
-import { padBytesWithSpace } from "../../../utils/bytes";
+import { formatUsernameToBytes32 } from "./utils";
 
 export class ProfileContractService {
   /**
@@ -26,9 +26,7 @@ export class ProfileContractService {
   }
 
   getFromUsername(username: string): Promise<string> {
-    const encoded = hexlify(
-      padBytesWithSpace(toUtf8Bytes(username.replace("@", "")), 32)
-    );
+    const encoded = formatUsernameToBytes32(username);
     return this.contract.getFunction("getFromUsername")(encoded);
   }
 

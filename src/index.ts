@@ -21,6 +21,7 @@ export { getLocalIOUHash, getSignedHash } from "./services/contracts/IOU/utils";
 // Profiles
 export * from "./services/profile";
 export * from "./services/contracts/Profile";
+export * from "./services/contracts/Profile/utils";
 
 // FaucetFactory
 export {
