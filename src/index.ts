@@ -68,6 +68,7 @@ export { ERC20ContractService } from "./services/contracts/ERC20";
 export { useSafeEffect } from "./hooks/useSafeEffect";
 export { useScrollableElementFetcher } from "./hooks/useScrollableElementFetcher";
 export { useScrollableWindowFetcher } from "./hooks/useScrollableWindowFetcher";
+export { useFocusEffect } from "./hooks/useFocusEffect";
 
 // Utils
 export * from "./utils/deeplink";
