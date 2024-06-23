@@ -1,4 +1,4 @@
-import { BaseWallet, SigningKey } from "ethers";
+import { Wallet, SigningKey } from "ethers";
 import { decompress } from "../../utils/deeplink";
 
 export interface Voucher {
@@ -21,7 +21,7 @@ export const parseVoucher = (data: string) => {
   const signingKey = new SigningKey(
     decodedKey.replace("00", "").replace("v2-", "0x")
   );
-  const signer = new BaseWallet(signingKey);
+  const signer = new Wallet(signingKey);
 
   const voucherParams = url.searchParams.get("params");
   if (!voucherParams) {
