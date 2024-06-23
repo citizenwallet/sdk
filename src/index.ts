@@ -50,6 +50,9 @@ export { ConfigService } from "./services/config";
 export * from "./services/api/config";
 export * from "./services/config/utils";
 
+// Vouchers
+export * from "./services/vouchers";
+
 // Checkout
 export { CheckoutActions, useCheckout } from "./state/checkout";
 export { SessionService } from "./services/session";
