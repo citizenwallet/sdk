@@ -24,6 +24,10 @@ export interface IndexerResponsePaginationMetadata {
   offset: number;
   total: number;
 }
+export interface ObjectResponse<T, M> {
+  object: T;
+  meta: M;
+}
 
 export interface ArrayResponse<T, M> {
   array: T[];
@@ -50,6 +54,18 @@ export class IndexerService {
   constructor(config: ConfigIndexer) {
     this.url = config.url;
     this.key = config.key;
+  }
+
+  async getTransfer(
+    tokenAddress: string,
+    hash: string
+  ): Promise<ObjectResponse<Transfer, IndexerResponsePaginationMetadata>> {
+    const url = `${this.url}/logs/v2/transfers/${tokenAddress}/tx/${hash}`;
+
+    const resp = await fetch(url, {
+      headers: { Authorization: `Bearer ${this.key}` },
+    });
+    return resp.json();
   }
 
   async getAllTransfers(
