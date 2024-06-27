@@ -1,10 +1,11 @@
-import { JsonRpcProvider, encodeBytes32String, ethers } from "ethers";
+import { JsonRpcProvider, ethers } from "ethers";
 import tokenEntryPointContractAbi from "smartcontracts/build/contracts/tokenEntryPoint/TokenEntryPoint.abi.json";
 import accountFactoryContractAbi from "smartcontracts/build/contracts/accfactory/AccountFactory.abi.json";
 import accountContractAbi from "smartcontracts/build/contracts/account/Account.abi.json";
 import tokenContractAbi from "smartcontracts/build/contracts/erc20/ERC20.abi.json";
 import profileContractAbi from "smartcontracts/build/contracts/profile/Profile.abi.json";
 import { Config } from "../api/config";
+import { formatUsernameToBytes32 } from "../contracts/Profile/utils";
 
 const accountFactoryInterface = new ethers.Interface(accountFactoryContractAbi);
 const accountInterface = new ethers.Interface(accountContractAbi);
@@ -77,7 +78,7 @@ const profileCallData = (
       BigInt(0),
       profileInterface.encodeFunctionData("set", [
         profileAccountAddress,
-        encodeBytes32String(username),
+        formatUsernameToBytes32(username),
         ipfsHash,
       ]),
     ])
