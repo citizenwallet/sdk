@@ -6,7 +6,7 @@ import tokenContractAbi from "smartcontracts/build/contracts/erc20/ERC20.abi.jso
 import profileContractAbi from "smartcontracts/build/contracts/profile/Profile.abi.json";
 import { Config } from "../api/config";
 import { formatUsernameToBytes32 } from "../contracts/Profile/utils";
-import { isFunctionInABI, MINTER_ROLE, hasRole } from "../../utils/crypto";
+import { MINTER_ROLE, hasRole } from "../../utils/crypto";
 
 const accountFactoryInterface = new ethers.Interface(accountFactoryContractAbi);
 const accountInterface = new ethers.Interface(accountContractAbi);
@@ -374,10 +374,6 @@ export class BundlerService {
     amount: string,
     description?: string
   ): Promise<string> {
-    if (!isFunctionInABI("mint", tokenContractAbi)) {
-      throw new Error("Mint function not found in token contract ABI");
-    }
-
     const formattedAmount = ethers.parseUnits(
       amount,
       this.config.token.decimals
