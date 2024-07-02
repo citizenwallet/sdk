@@ -66,6 +66,15 @@ const transferCallData = (
     ])
   );
 
+const mintCallData = (tokenAddress: string, receiver: string, amount: bigint) =>
+  ethers.getBytes(
+    accountInterface.encodeFunctionData("execute", [
+      tokenAddress,
+      BigInt(0),
+      erc20Token.encodeFunctionData("mint", [receiver, amount]),
+    ])
+  );
+
 const profileCallData = (
   profileContractAddress: string,
   profileAccountAddress: string,
@@ -334,6 +343,42 @@ export class BundlerService {
     );
 
     const calldata = transferCallData(tokenAddress, to, formattedAmount);
+
+    const owner = await signer.getAddress();
+
+    let userop = await this.prepareUserOp(owner, from, calldata);
+
+    // get the paymaster to sign the userop
+    userop = await this.paymasterSignUserOp(userop);
+
+    // sign the userop
+    const signature = await this.signUserOp(signer, userop);
+
+    userop.signature = signature;
+
+    // submit the user op
+    const hash = await this.submitUserOp(
+      userop,
+      description !== undefined ? { description } : undefined
+    );
+
+    return hash;
+  }
+
+  async mintERC20Token(
+    signer: ethers.Signer,
+    tokenAddress: string,
+    from: string,
+    to: string,
+    amount: string,
+    description?: string
+  ): Promise<string> {
+    const formattedAmount = ethers.parseUnits(
+      amount,
+      this.config.token.decimals
+    );
+
+    const calldata = mintCallData(tokenAddress, to, formattedAmount);
 
     const owner = await signer.getAddress();
 
