@@ -12,8 +12,8 @@ dist/
 .DS_Store
 Thumbs.db
 
-.env
 
 cache
 
 artifacts
+config.bat

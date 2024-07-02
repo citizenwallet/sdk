@@ -394,7 +394,7 @@ export class BundlerService {
 
       userop.signature = signature;
     } catch (e) {
-      throw new Error("Error preparing user op");
+      throw new Error(`Error preparing user op: ${e}`);
     }
 
     try {
@@ -411,7 +411,7 @@ export class BundlerService {
           `Signer (${from}) does not have the MINTER_ROLE on token contract ${tokenAddress}`
         );
       }
-      throw new Error("Error submitting user op");
+      throw new Error(`Error submitting user op: ${e}`);
     }
   }
 
