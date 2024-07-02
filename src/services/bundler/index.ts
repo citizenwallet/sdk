@@ -6,6 +6,7 @@ import tokenContractAbi from "smartcontracts/build/contracts/erc20/ERC20.abi.jso
 import profileContractAbi from "smartcontracts/build/contracts/profile/Profile.abi.json";
 import { Config } from "../api/config";
 import { formatUsernameToBytes32 } from "../contracts/Profile/utils";
+import { isFunctionInABI, MINTER_ROLE, hasRole } from "../../utils/crypto";
 
 const accountFactoryInterface = new ethers.Interface(accountFactoryContractAbi);
 const accountInterface = new ethers.Interface(accountContractAbi);
@@ -373,6 +374,10 @@ export class BundlerService {
     amount: string,
     description?: string
   ): Promise<string> {
+    if (!isFunctionInABI("mint", tokenContractAbi)) {
+      throw new Error("Mint function not found in token contract ABI");
+    }
+
     const formattedAmount = ethers.parseUnits(
       amount,
       this.config.token.decimals
@@ -384,21 +389,34 @@ export class BundlerService {
 
     let userop = await this.prepareUserOp(owner, from, calldata);
 
-    // get the paymaster to sign the userop
-    userop = await this.paymasterSignUserOp(userop);
+    try {
+      // get the paymaster to sign the userop
+      userop = await this.paymasterSignUserOp(userop);
 
-    // sign the userop
-    const signature = await this.signUserOp(signer, userop);
+      // sign the userop
+      const signature = await this.signUserOp(signer, userop);
 
-    userop.signature = signature;
+      userop.signature = signature;
+    } catch (e) {
+      throw new Error("Error preparing user op");
+    }
 
-    // submit the user op
-    const hash = await this.submitUserOp(
-      userop,
-      description !== undefined ? { description } : undefined
-    );
+    try {
+      // submit the user op
+      const hash = await this.submitUserOp(
+        userop,
+        description !== undefined ? { description } : undefined
+      );
 
-    return hash;
+      return hash;
+    } catch (e) {
+      if (!(await hasRole(tokenAddress, MINTER_ROLE, from, signer))) {
+        throw new Error(
+          `Signer (${from}) does not have the MINTER_ROLE on token contract ${tokenAddress}`
+        );
+      }
+      throw new Error("Error submitting user op");
+    }
   }
 
   async setProfile(
