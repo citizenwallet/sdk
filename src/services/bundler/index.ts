@@ -6,6 +6,7 @@ import tokenContractAbi from "smartcontracts/build/contracts/erc20/ERC20.abi.jso
 import profileContractAbi from "smartcontracts/build/contracts/profile/Profile.abi.json";
 import { Config } from "../api/config";
 import { formatUsernameToBytes32 } from "../contracts/Profile/utils";
+import { MINTER_ROLE, hasRole } from "../../utils/crypto";
 
 const accountFactoryInterface = new ethers.Interface(accountFactoryContractAbi);
 const accountInterface = new ethers.Interface(accountContractAbi);
@@ -63,6 +64,15 @@ const transferCallData = (
       tokenAddress,
       BigInt(0),
       erc20Token.encodeFunctionData("transfer", [receiver, amount]),
+    ])
+  );
+
+const mintCallData = (tokenAddress: string, receiver: string, amount: bigint) =>
+  ethers.getBytes(
+    accountInterface.encodeFunctionData("execute", [
+      tokenAddress,
+      BigInt(0),
+      erc20Token.encodeFunctionData("mint", [receiver, amount]),
     ])
   );
 
@@ -354,6 +364,55 @@ export class BundlerService {
     );
 
     return hash;
+  }
+
+  async mintERC20Token(
+    signer: ethers.Signer,
+    tokenAddress: string,
+    from: string,
+    to: string,
+    amount: string,
+    description?: string
+  ): Promise<string> {
+    const formattedAmount = ethers.parseUnits(
+      amount,
+      this.config.token.decimals
+    );
+
+    const calldata = mintCallData(tokenAddress, to, formattedAmount);
+
+    const owner = await signer.getAddress();
+
+    let userop = await this.prepareUserOp(owner, from, calldata);
+
+    try {
+      // get the paymaster to sign the userop
+      userop = await this.paymasterSignUserOp(userop);
+
+      // sign the userop
+      const signature = await this.signUserOp(signer, userop);
+
+      userop.signature = signature;
+    } catch (e) {
+      throw new Error(`Error preparing user op: ${e}`);
+    }
+
+    try {
+      // submit the user op
+      const hash = await this.submitUserOp(
+        userop,
+        description !== undefined ? { description } : undefined
+      );
+
+      return hash;
+    } catch (e) {
+      if (!(await hasRole(tokenAddress, MINTER_ROLE, from, signer))) {
+        throw new Error(
+          `Signer (${from}) does not have the MINTER_ROLE on token contract ${tokenAddress}`
+        );
+      }
+      throw new Error(`Error submitting user op: ${e}`);
+    }
   }
 
   async setProfile(
