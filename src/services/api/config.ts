@@ -3,6 +3,7 @@ import { randomCacheNumber } from "./utils";
 
 export interface ConfigCommunityTheme {
   primary: string;
+  secondary?: string;
 }
 
 export interface ConfigCommunity {
