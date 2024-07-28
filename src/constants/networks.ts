@@ -89,4 +89,17 @@ export const NETWORKS: Networks = {
     accountFactoryFactoryAddress: "0xcA0a75EF803a364C83c5EAE7Eb889aE7419c9dF2",
     profileFactoryAddress: "0xAE76B1C6818c1DD81E20ccefD3e72B773068ABc9",
   },
+  "42161": {
+    chainId: 42161,
+    name: "Arbitrum",
+    symbol: "Ether",
+    explorer: "https://arbiscan.io",
+    rpcUrl:
+      "https://arbitrum-mainnet.core.chainstack.com/1bb2d90f85b74101e81f2225fbeb7ef8",
+    wsRpcUrl:
+      "wss://arbitrum-mainnet.core.chainstack.com/1bb2d90f85b74101e81f2225fbeb7ef8",
+    tokenEntryPointFactoryAddress: "0xAE76B1C6818c1DD81E20ccefD3e72B773068ABc9",
+    accountFactoryFactoryAddress: "0x05e2Fb34b4548990F96B3ba422eA3EF49D5dAa99",
+    profileFactoryAddress: "0x1D7546BA232Bd5A0A240f2962d5a3f622aBB56F1",
+  },
 };
