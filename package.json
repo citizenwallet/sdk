@@ -60,7 +60,7 @@
     "ethers": "^6.11.1",
     "fflate": "^0.8.2",
     "react": "^18.2.0",
-    "smartcontracts": "github:citizenwallet/smartcontracts#v0.0.106",
+    "smartcontracts": "github:citizenwallet/smartcontracts#v0.0.110",
     "zustand": "^4.5.2"
   }
 }
