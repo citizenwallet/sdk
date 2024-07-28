@@ -5,6 +5,7 @@ export const FaucetFactories: { [key: string]: string } = {
   "137": "0xA75763a9CBBAed9870CBfE5562ed5F0172A69953",
   "8453": "0x04C06b9579b4f0C3ca65A35aabFf03BD9622279C",
   "100": "0x944EDEc373b18B8329779F20C6Fd9baf6CB79c81",
+  "42161": "0x0da2F14429BeF7f7B55009052Ce69B9f5bD129bd",
 };
 
 export const VoucherFactories: { [key: string]: string } = {
