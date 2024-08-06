@@ -57,8 +57,10 @@
   },
   "dependencies": {
     "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "dotenv": "^8.2.0",
     "ethers": "^6.11.1",
     "fflate": "^0.8.2",
+    "node-fetch": "^3.3.2",
     "react": "^18.2.0",
     "smartcontracts": "github:citizenwallet/smartcontracts#v0.0.106",
     "zustand": "^4.5.2"
