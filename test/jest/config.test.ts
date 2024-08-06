@@ -18,15 +18,15 @@ describe("Config", () => {
   });
 
   it("get a config", async () => {
-    const config = await configService.getBySlug("community1");
+    const config = await configService.getBySlug("community2");
 
-    expect(config.community.name).toBe("Community 1");
+    expect(config.community.name).toBe("Community 2");
   });
 
   it("get all configs", async () => {
     const configs = await configService.get();
 
-    expect(configs.length).toBe(3);
+    expect(configs.length).toBe(4);
   });
 
   it("get a config using a slug with the store", async () => {
@@ -36,14 +36,14 @@ describe("Config", () => {
     expect(state.error).toBe(false);
     expect(state.config).toBe(undefined);
 
-    await configActions.getConfig("community1");
+    await configActions.getConfig("community2");
 
     const newState = configActions.store.getState();
 
     expect(newState.loading).toBe(false);
     expect(newState.error).toBe(false);
     expect(newState.config).not.toBe(undefined);
-    expect(newState.config?.community.name).toBe("Community 1");
+    expect(newState.config?.community.name).toBe("Community 2");
   });
 
   it("get all configs with the store", async () => {
@@ -60,7 +60,7 @@ describe("Config", () => {
     expect(newState.loading).toBe(false);
     expect(newState.error).toBe(false);
     expect(newState.configs).not.toBe(undefined);
-    expect(newState.configs?.length).toBe(3);
+    expect(newState.configs?.length).toBe(4);
   });
 
   it("fail to get with the wrong slug with the store", async () => {
