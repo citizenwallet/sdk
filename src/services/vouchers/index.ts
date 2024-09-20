@@ -112,7 +112,7 @@ export const createVoucher = async (
 
   const encodedVoucherKey = compress(voucherKey);
 
-  const voucherLink = `${process.env.DEEPLINK_URL}/#/?voucher=${encodedVoucherKey}&params=${voucherString}`;
+  const voucherLink = `https://app.citizenwallet.xyz/#/?voucher=${encodedVoucherKey}&params=${voucherString}`;
 
   return { voucherLink, voucherAccountAddress };
 };
