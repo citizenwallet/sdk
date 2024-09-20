@@ -1,4 +1,4 @@
-import { Wallet, SigningKey, BaseWallet } from "ethers";
+import { Wallet, SigningKey, BaseWallet, JsonRpcProvider } from "ethers";
 import { compress, decompress } from "../../utils/deeplink";
 import { ConfigService } from "../config";
 import { AccountFactoryService } from "../contracts/AccountFactory";
@@ -89,9 +89,12 @@ export const createVoucher = async (
   const configService = new ConfigService();
   const config = await configService.getBySlug(communityAlias);
 
+  const provider = new JsonRpcProvider(config.node.url);
+  const connectedSigner = voucherSigner.connect(provider);
+
   const accountFactory = new AccountFactoryService(
     config.erc4337.account_factory_address,
-    voucherSigner
+    connectedSigner
   );
   const voucherAccountAddress = await accountFactory.getAddress();
 
