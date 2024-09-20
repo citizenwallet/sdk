@@ -1,4 +1,4 @@
-import { Wallet, SigningKey } from "ethers";
+import { Wallet, SigningKey, BaseWallet } from "ethers";
 import { compress, decompress } from "../../utils/deeplink";
 import { ConfigService } from "../config";
 import { AccountFactoryService } from "../contracts/AccountFactory";
@@ -84,7 +84,7 @@ export const createVoucher = async (
   communityAlias: string,
   voucherName: string,
   voucherCreator: string,
-  voucherSigner: Wallet
+  voucherSigner: BaseWallet
 ) => {
   const configService = new ConfigService();
   const config = await configService.getBySlug(communityAlias);
