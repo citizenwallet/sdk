@@ -1,6 +1,6 @@
 <div align="center">
     <img src="https://raw.githubusercontent.com/citizenwallet/sdk/main/assets/logo.png" alt="Citizen Wallet Logo" width="200">
-    <h1>Citizen Wallet SDK</h1>
+    <h1>Citizen Wallet SDK (legacy)</h1>
 </div>
 
 🚧 Alpha
