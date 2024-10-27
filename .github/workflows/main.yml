@@ -69,18 +69,3 @@ jobs:
 
       - name: Push Tag
         run: git push origin ${{ steps.parse_tag.outputs.tag }}
-
-      - run: npm ci
-
-      - name: Publish to npm
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Notify of successful deploy
-        run: |
-          curl --location '${{ secrets.DISCORD_WEBHOOK_URL }}' \
-          --header 'Content-Type: application/json' \
-          --data '{
-              "content": "new sdk update available:\n `npm i @citizenwallet/sdk@'${{ steps.parse_tag.outputs.tag }}'`\n or \n `npm i @citizenwallet/sdk@latest` \n\n https://www.npmjs.com/package/@citizenwallet/sdk?activeTab=readme"
-          }'
