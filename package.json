@@ -1,6 +1,6 @@
 {
   "name": "@citizenwallet/sdk",
-  "version": "1.2.48",
+  "version": "1.2.49",
   "description": "An sdk to easily work with your community server.",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -57,8 +57,10 @@
   },
   "dependencies": {
     "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "dotenv": "^8.2.0",
     "ethers": "^6.11.1",
     "fflate": "^0.8.2",
+    "node-fetch": "^3.3.2",
     "react": "^18.2.0",
     "smartcontracts": "github:citizenwallet/smartcontracts#v0.0.110",
     "zustand": "^4.5.2"
